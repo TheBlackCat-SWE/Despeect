@@ -40,26 +40,6 @@ protected:
      */
     void initSpeect(s_logger* logger);
     /**
-     * @brief quitSpeect
-     * Requests a graceful shutdown of the Speect Engine.
-     */
-    void quitSpeect();
-    /**
-     * @brief loadText
-     * Creates an @c SObject (of type @c SString) containing the external
-     * input text and references it with a private pointer variable.
-     * @param text The input text string to be loaded.
-     */
-    void loadText(const std::string& text);
-    /**
-     * @brief loadVoice
-     * Loads a voice from the given path, making the speect internal
-     * engine able to retrieve all the plugins related to the voice.
-     * @param voice_conf_path The path where the voice.json can be
-     * found.
-     */
-    void loadVoice(const std::string& voice_conf_path);
-    /**
      * @brief loadPlugin
      * Loads a plug-in from the given path. If the plug-in at the given
      * path has already been loaded, then the plug-in library's reference
@@ -85,6 +65,26 @@ public:
      * @c DSAdapter.
      */
     static DSAdapter* createAdapter(const std::string& voice_conf_path);
+    /**
+     * @brief quitSpeect
+     * Requests a graceful shutdown of the Speect Engine.
+     */
+    void quitSpeect();
+    /**
+     * @brief loadText
+     * Creates an @c SObject (of type @c SString) containing the external
+     * input text and references it with a private pointer variable.
+     * @param text The input text string to be loaded.
+     */
+    void loadText(const std::string& text);
+    /**
+     * @brief loadVoice
+     * Loads a voice from the given path, making the speect internal
+     * engine able to retrieve all the plugins related to the voice.
+     * @param voice_conf_path The path where the voice.json can be
+     * found.
+     */
+    void loadVoice(const std::string& voice_conf_path);
     /**
      * @brief loadInputText
      * Loads a string of input text in the internal memory for later usage.
