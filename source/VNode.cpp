@@ -11,7 +11,7 @@ VNode::VNode(int x, int y, DSItem *info, QColor color)
      info(info),
      color(color)
 {
-  //  setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 }
