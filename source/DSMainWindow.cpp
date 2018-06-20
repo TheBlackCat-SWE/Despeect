@@ -9,6 +9,8 @@
 #include "DSListModel.hpp"
 #include "DSCentralWidget.hpp"
 #include <string>
+#include <QFileDialog>
+#include <QMessageBox>
 
 
 void DSMainWindow::createActions() {
@@ -17,21 +19,23 @@ void DSMainWindow::createActions() {
         for(int i = 0; i < list->size(); i++) tool_bar->addAction(list->at(i));
         tool_bar->insertSeparator(list->at(n));
         */
+    createActionLoadVoice();
+    createActionShowVoicePath();
 }
 
 void DSMainWindow::createMenus() {
-    /* EXAMPLE CODE
         QMenu* fileMenu = new QMenu("File", this);
-        for(int i = 0; i < list->size(); i++) {
-            fileMenu->addAction(list->at(i));
+        for(int i = 0; i < actions.size(); i++) {
+            fileMenu->addAction(actions.at(i));
             // if(i == 2 || i == 6) fileMenu->addSeparator();
         }
         fileMenu->addSeparator();
+
         QAction* exitAct = new QAction(QIcon(":/Risorse/Icons/exit.png"), "Esci", this);
         fileMenu->addAction(exitAct);
-        connect(exitAct, &QAction::triggered, this, &MainWindow::shutDownApp);
+        connect(exitAct, &QAction::triggered, this, &DSMainWindow::close);
+
         menu_bar->addMenu(fileMenu);
-        */
 }
 
 void DSMainWindow::doConnections() {
@@ -65,9 +69,9 @@ DSMainWindow::DSMainWindow(QWidget* parent):
      * Be sure to provide DSAdapter with the correct path depending on
      * your install.sh script location
      */
-    adapter(DSAdapter::createAdapter(
-                "/home/luca/Scrivania/Progetto-Graphite/TBC_PoC"
-                "/SpeectLib/voices/meraka_lwazi2_alta/voice.json")),
+    voice_path("/home/luca/Scrivania/Progetto-Graphite/TBC_PoC"
+               "/SpeectLib/voices/meraka_lwazi2_alta/voice.json"),
+    adapter(DSAdapter::createAdapter(voice_path)),
     tree_model(new DSTreeModel(this, adapter)),
     tree_view(new QTreeView(this)),
     list_model(new DSListModel(this, adapter)),
@@ -96,6 +100,36 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     //Toglie il flag usando le operazioni bitwise (AND e NOT)
     setWindowTitle("Despeect");
+}
+
+void DSMainWindow::createActionLoadVoice() {
+    const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":/images/open.png"));
+
+    QAction *openAct = new QAction(openIcon, QObject::tr("Load Configuration File"), this);
+    openAct->setShortcuts(QKeySequence::Open);
+    openAct->setStatusTip(tr("Load Configuration File"));
+    QObject::connect(openAct,
+                     &QAction::triggered,
+                     [=] () {
+                             QString path = QFileDialog::getOpenFileName(this,QObject::tr("Oper Configuration File"), "../../", QObject::tr("Voice Files (*.json)"));
+                             voice_path = path.toStdString();
+                             adapter->loadVoice(voice_path);
+                        });
+    actions.push_back(openAct);
+}
+
+void DSMainWindow::createActionShowVoicePath() {
+    const QIcon openIcon = QIcon::fromTheme("dialog-information");
+    QAction *openAct = new QAction(openIcon, QObject::tr("Show Voice Path"), this);
+    openAct->setStatusTip(tr("Show Voice Path"));
+    QObject::connect(openAct,
+                     &QAction::triggered,
+                     [this] () {
+        QMessageBox msgBox;
+        msgBox.setText(voice_path.c_str());
+        msgBox.exec();
+    });
+    actions.push_back(openAct);
 }
 
 DSMainWindow::~DSMainWindow() {
