@@ -50,13 +50,12 @@ void DSAdapter::loadPlugin(const std::string& plugin_path) {
               "Failed to load &s plugin\n", plugin_path);
 }
 
-DSAdapter *DSAdapter::createAdapter(const std::string& voice_conf_path) {
+DSAdapter *DSAdapter::createAdapter() {
     DSAdapter* ptr = new DSAdapter;
 
     ptr->initSpeect(s_logger_console_new(true));
 
     if(!ptr->hasError()) {
-        ptr->loadVoice(voice_conf_path);
         ptr->loadPlugin("audio_riff.spi");
         return ptr;
     }
