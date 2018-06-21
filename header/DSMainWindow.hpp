@@ -7,6 +7,7 @@
 #define DSMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 #include <QTreeView>
 #include <QListView>
 #include <QDockWidget>
@@ -24,9 +25,8 @@ class DSCentralWidget;
 class DSMainWindow: public QMainWindow {
     Q_OBJECT
 private:
-    std::string voice_path;
-
     DSAdapter* adapter;
+    QString voice_path;
     DSTreeModel* tree_model;
     QTreeView* tree_view;
     DSListModel* list_model;
