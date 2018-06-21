@@ -21,6 +21,9 @@ private:
     QStringList list;
 
     void setupModelData();
+public slots:
+    //Using this slot should always be the only proper way to call setupModelData
+    void fetchData();
 public:
     DSListModel(QObject* parent, DSAdapter* adapter);
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
