@@ -64,7 +64,7 @@ public:
      * @note The caller is responsible for the memory of the returned
      * @c DSAdapter.
      */
-    static DSAdapter* createAdapter(const std::string& voice_conf_path);
+    static DSAdapter* createAdapter();
     /**
      * @brief quitSpeect
      * Requests a graceful shutdown of the Speect Engine.
