@@ -30,6 +30,7 @@ public slots:
     //Using this slot should always be the only proper way to call setupModelData
     void fetchData();
 public:
+    //TODO Add tristate for utt_type checkboxes
     DSTreeModel(QObject* parent, DSAdapter* adapter);
     QModelIndex index(int row, int column,
                       const QModelIndex& parent = QModelIndex()) const override;
