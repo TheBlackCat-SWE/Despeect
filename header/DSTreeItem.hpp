@@ -20,6 +20,7 @@ private:
     QList<DSTreeItem*> child_items;
     QList<QVariant> item_data;
     DSTreeItem* parent_item;
+    bool checked;
 public:
     DSTreeItem(const QList<QVariant>& data, DSTreeItem* parent = Q_NULLPTR);
     void appendChild(DSTreeItem* child);
@@ -29,6 +30,8 @@ public:
     int columnCount() const;
     QVariant data(int column) const;
     DSTreeItem* parentItem();
+    bool isChecked() const;
+    void setChecked(bool val);
     ~DSTreeItem();
 };
 
