@@ -102,17 +102,16 @@ int DSTreeModel::columnCount(const QModelIndex& parent) const {
 }
 
 QVariant DSTreeModel::data(const QModelIndex& index, int role) const {
-    if(index.isValid() && (role == Qt::DisplayRole || role == Qt::CheckStateRole)) {
-        if(role == Qt::CheckStateRole && index.column() == 0) {
-            DSTreeItem* item = static_cast<DSTreeItem*>(index.internalPointer());
-            return static_cast<int>(item->isChecked() ? Qt::Checked : Qt::Unchecked);
-        }
-
+    if(index.isValid()) {
         DSTreeItem* item = static_cast<DSTreeItem*>(index.internalPointer());
 
-        return item->data(index.column());
+        if(role == Qt::DisplayRole)
+            return item->data(index.column());
+
+        if(role == Qt::CheckStateRole && index.column() == 0)
+            return static_cast<int>(item->isChecked() ? Qt::Checked : Qt::Unchecked);
     }
-    else return QVariant();
+    return QVariant();
 }
 
 Qt::ItemFlags DSTreeModel::flags(const QModelIndex &index) const {
@@ -122,15 +121,21 @@ Qt::ItemFlags DSTreeModel::flags(const QModelIndex &index) const {
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
     if(index.column() == 0)
-        flags |= Qt::ItemIsUserCheckable | Qt::ItemIsAutoTristate;
+        flags |= Qt::ItemIsUserCheckable;
 
     return flags;
 }
 
 bool DSTreeModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    if(index.isValid() && role == Qt::CheckStateRole) {
+    if(index.isValid() && role == Qt::CheckStateRole && index.column() == 0) {
         DSTreeItem* item = static_cast<DSTreeItem*>(index.internalPointer());
         item->setChecked(value.toBool());
+
+        //Tick-untick all the childs' checkboxes
+        if(item->childCount() != 0)
+            for(int i = 0; i < item->childCount(); i++)
+                setData(index.child(i, index.column()), value, role);
+
         emit dataChanged(index, index, {role});
         return true;
     }
