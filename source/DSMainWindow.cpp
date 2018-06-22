@@ -45,7 +45,7 @@ void DSMainWindow::doConnections() {
 void DSMainWindow::setupUI() {
     list_view->setModel(list_model);
     list_dock->setWidget(list_view);
-    addDockWidget(Qt::LeftDockWidgetArea, tree_dock);
+    addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(central_widget);
@@ -66,7 +66,7 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     adapter(DSAdapter::createAdapter()),
     list_model(new DSListModel(this, adapter)),
     list_view(new QListView(this)),
-    tree_dock(new DSTreeDockWidget(this, adapter)),
+    flow_dock(new DSFlowControlDockWidget(this, adapter)),
     list_dock(new QDockWidget("Feature Processor", this)),
     central_widget(new DSCentralWidget(this, adapter)),
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
@@ -108,7 +108,7 @@ void DSMainWindow::createActionLoadVoice() {
              * Prevents the models from fetching data linked to the voice before loading voice.json
              * resulting in an internal speect error.
              */
-            tree_dock->fetchData();
+            flow_dock->fetchData();
             list_model->fetchData();
         }
     });
