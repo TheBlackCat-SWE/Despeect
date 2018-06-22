@@ -6,7 +6,7 @@
 #ifndef DSMAINWINDOW_H
 #define DSMAINWINDOW_H
 
-#include "DSTreeDockWidget.hpp"
+#include "DSFlowControlDockWidget.hpp"
 #include <QMainWindow>
 #include <QString>
 #include <QTreeView>
@@ -30,7 +30,7 @@ private:
     QString voice_path;
     DSListModel* list_model;
     QListView* list_view;
-    DSTreeDockWidget* tree_dock;
+    DSFlowControlDockWidget* flow_dock;
     QDockWidget* list_dock;
     DSCentralWidget* central_widget;
     QToolBar* tool_bar;
