@@ -12,11 +12,12 @@
 #include <QTreeView>
 #include <QListView>
 #include <QDockWidget>
-#include <QToolBar>
+//#include <QToolBar>
 #include <QMenuBar>
-#include <QStatusBar>
+//#include <QStatusBar>
+#include <QMap>
+#include <QAction>
 #include <QWidget>
-#include <QVector>
 
 
 class DSAdapter;
@@ -33,10 +34,10 @@ private:
     DSFlowControlDockWidget* flow_dock;
     QDockWidget* list_dock;
     DSCentralWidget* central_widget;
-    QToolBar* tool_bar;
+    //QToolBar* tool_bar;
     QMenuBar* menu_bar;
-    QStatusBar* status_bar;
-    QVector<QAction*> actions;
+    //QStatusBar* status_bar;
+    QMap<QString, QAction*> actions;
 
     void createActions();
     void createMenus();
@@ -45,6 +46,9 @@ private:
 
     void createActionLoadVoice();
     void createActionShowVoicePath();
+public slots:
+    void loadVoice();
+    void showVoicePath();
 public:
     DSMainWindow(QWidget* parent = Q_NULLPTR);
     ~DSMainWindow();
