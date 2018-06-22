@@ -3,8 +3,8 @@
   * @version 1.0 21/06/18
   */
 
-#ifndef DSTREEDOCKWIDGET_H
-#define DSTREEDOCKWIDGET_H
+#ifndef DSFLOWCONTROLWIDGET_H
+#define DSFLOWCONTROLWIDGET_H
 
 #include "DSTreeModel.hpp"
 #include "DSAdapter.hpp"
@@ -21,7 +21,7 @@
 #include <string>
 
 
-class DSTreeDockWidget: public QDockWidget {
+class DSFlowControlDockWidget: public QDockWidget {
 private:
     DSAdapter* adapter;
     DSTreeModel* tree_model;
@@ -89,7 +89,7 @@ public slots:
     }
     void fetchData() { tree_model->fetchData(); }
 public:
-    DSTreeDockWidget(QWidget* parent, DSAdapter* adapter):
+    DSFlowControlDockWidget(QWidget* parent, DSAdapter* adapter):
         QDockWidget(parent),
         adapter(adapter),
         tree_model(new DSTreeModel(this, adapter)),
@@ -104,4 +104,4 @@ public:
     }
 };
 
-#endif // DSTREEDOCKWIDGET_H
+#endif // DSFLOWCONTROLWIDGET_H
