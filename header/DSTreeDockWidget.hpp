@@ -8,6 +8,7 @@
 
 #include "DSTreeModel.hpp"
 #include "DSAdapter.hpp"
+#include "DSTreeItem.hpp"
 #include <QDockWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -62,7 +63,7 @@ private:
                     QModelIndex utt_proc = tree_model->index(i, 0, utt_type);
                     DSTreeItem* item = static_cast<DSTreeItem*>(utt_proc.internalPointer());
                     if(item->isChecked())
-                        proc_queue.enqueue(item->data(index.column()).toString());
+                        proc_queue.enqueue(item->data(utt_proc.column()).toString());
                 }
             }
         }
