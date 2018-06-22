@@ -34,6 +34,8 @@ private:
     QQueue<QString> proc_queue;
 
     void setupUI() {
+        doConnections();
+     
         tree_view->setModel(tree_model);
 
         v_layout->addWidget(tree_view);
@@ -67,6 +69,11 @@ private:
                 }
             }
         }
+    }
+    void doConnections() {
+        connect(run_all_button, &QPushButton::clicked, this, &DSFlowControlDockWidget::run_all_clicked);
+        connect(run_step_button, &QPushButton::clicked, this, &DSFlowControlDockWidget::run_step_clicked);
+        connect(reset_button, &QPushButton::clicked, this, &DSFlowControlDockWidget::reset_clicked);
     }
 public slots:
     void run_all_clicked() {
