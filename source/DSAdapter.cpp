@@ -178,7 +178,7 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
                      "Failed to create new utterance\n"))
             return false;
         S_CLR_ERR(&error);
-        SUtteranceInit(utt, voice, &error);
+        SUtteranceInit(&utt, voice, &error);
         if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
                      "Failed to initialize new utterance\n"))
             return false;
@@ -211,25 +211,25 @@ bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
                      "Failed to create new utterance\n"))
             return false;
         S_CLR_ERR(&error);
-        SUtteranceInit(utt, voice, &error);
+        SUtteranceInit(&utt, voice, &error);
         if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
                      "Failed to initialize new utterance\n"))
             return false;
     }
 
     S_CLR_ERR(&error);
-    const SUttProcessor* utt_proc = SVoiceGetUttProc(voice, utt_proc_key, &error);
+    const SUttProcessor* utt_proc = SVoiceGetUttProc(voice, utt_proc_key.c_str(), &error);
     if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
                  "Failed to retrieve %s utterance processor pointer\n"),
-                 utt_proc_key)
+                 utt_proc_key.c_str())
         return false;
     S_CLR_ERR(&error);
     SUttProcessorRun(utt_proc, utt, &error);
     if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
                  "Failed to run %s utterance processor on current utterance\n"),
-                 utt_proc_key)
+                 utt_proc_key.c_str())
         return false;
-    else return true;
+    return true;
 }
 
 void DSAdapter::resetUtterance() {
