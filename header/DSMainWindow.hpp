@@ -43,9 +43,6 @@ private:
     void createMenus();
     void doConnections();
     void setupUI();
-
-    void createActionLoadVoice();
-    void createActionShowVoicePath();
 public slots:
     void loadVoice();
     void showVoicePath();
