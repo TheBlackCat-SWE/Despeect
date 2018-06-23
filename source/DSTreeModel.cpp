@@ -114,7 +114,7 @@ QVariant DSTreeModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-Qt::ItemFlags DSTreeModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags DSTreeModel::flags(const QModelIndex& index) const {
     if(!index.isValid())
         return 0;
 
@@ -126,7 +126,7 @@ Qt::ItemFlags DSTreeModel::flags(const QModelIndex &index) const {
     return flags;
 }
 
-bool DSTreeModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+bool DSTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     if(index.isValid() && role == Qt::CheckStateRole && index.column() == 0) {
         DSTreeItem* item = static_cast<DSTreeItem*>(index.internalPointer());
         item->setChecked(value.toBool());
@@ -135,6 +135,24 @@ bool DSTreeModel::setData(const QModelIndex &index, const QVariant &value, int r
         if(item->childCount() != 0)
             for(int i = 0; i < item->childCount(); i++)
                 setData(index.child(i, index.column()), value, role);
+
+        //Untick all the utt_procs' checkboxes belonging to other utt_types
+        if(static_cast<Qt::CheckState>(value.toInt()) == Qt::Checked) {
+            QModelIndex current_utt_type = index;
+            //Climb the tree until you reach the utt_type node
+            do {
+                current_utt_type = current_utt_type.parent();
+            }
+            while(parent(current_utt_type).isValid());
+            //Loop over all the utt_types unticking them cascade style unless it hits
+            //the current one
+            QModelIndex i = current_utt_type.siblingAtRow(0);
+            while(i.isValid()) {
+                if(i != current_utt_type)
+                    setData(i, Qt::Unchecked, role);
+                i = i.siblingAtRow(i.row() + 1);
+            }
+        }
 
         emit dataChanged(index, index, {role});
         return true;

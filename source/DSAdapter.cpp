@@ -5,6 +5,7 @@
 
 #include "DSAdapter.hpp"
 #include "DSRelation.hpp"
+#include <iostream>
 
 
 DSAdapter::DSAdapter() :
@@ -31,7 +32,8 @@ void DSAdapter::quitSpeect() {
 
 void DSAdapter::loadText(const std::string& text) {
     S_CLR_ERR(&error);
-    this->text = SObjectSetString(text.c_str(), &error);
+    if(!text.empty())
+        this->text = SObjectSetString(text.c_str(), &error);
     S_CHK_ERR(&error, S_CONTERR, "loadText",
               "Failed to load text\n");
 }
@@ -189,7 +191,7 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
     }
     return true;
 }
-
+//FIXME Come mai non mi serve il testo?
 bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
     // Public interface non-const calls should check for internal integrity
     if(hasError()) {
@@ -229,19 +231,25 @@ bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
                  "Failed to run %s utterance processor on current utterance\n"),
                  utt_proc_key.c_str())
         return false;
+    std::cout << utt_proc_key << " utterance processor successfully executed";
     return true;
 }
 
-void DSAdapter::resetUtterance() {
+bool DSAdapter::resetUtterance() {
     // Public interface non-const calls should check for internal integrity
     if(hasError()) {
         S_WARNING(error, "resetUtterance", "The system was found to be"
                   " in an inconsistent state before this func call.\n"
                   "This may result in unexpected behaviour\n");
+        return false;
     }
 
-    if(utt != NULL)
+    if(utt != NULL) {
         S_DELETE(utt, "resetUtterance", &error);
+        std::cout << "Utterance successfully reset";
+        return true;
+    }
+    return false;
 }
 
 bool DSAdapter::hasError() const { return error != S_SUCCESS; }

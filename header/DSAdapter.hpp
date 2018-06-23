@@ -125,7 +125,7 @@ public:
 
     bool execUttProcList(const std::vector<std::string>& proc_list);
     bool execUttProc(const std::string& utt_proc_key);
-    void resetUtterance();
+    bool resetUtterance();
 
     // --------------------------- DANGER ZONE ---------------------------
 
