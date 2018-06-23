@@ -12,6 +12,8 @@
 #include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
 #include <string>
 
 
@@ -34,12 +36,18 @@ void DSMainWindow::createMenus() {
 void DSMainWindow::doConnections() {
     connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
+    connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
+    connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
+    connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
+    connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
+    connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
 void DSMainWindow::setupUI() {
     list_view->setModel(list_model);
     list_dock->setWidget(list_view);
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
+    addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(central_widget);
@@ -60,12 +68,7 @@ void DSMainWindow::loadVoice() {
                                               "../../", "Voice Files (*.json)");
     if(!voice_path.isEmpty()) {
         adapter->loadVoice(voice_path.toStdString());
-        /*
-             * Prevents the models from fetching data linked to the voice before loading voice.json
-             * resulting in an internal speect error.
-             */
-        flow_dock->fetchData();
-        list_model->fetchData();
+        emit fetchData();
     }
 }
 
@@ -75,21 +78,39 @@ void DSMainWindow::showVoicePath() {
     msgBox.exec();
 }
 
+void DSMainWindow::loadTextFromFile() {
+    QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
+                                                     "../../", "Text Files (*.txt)");
+    QFile file(file_path);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream read_file(&file);
+    text_dock->setText(read_file.readAll());
+}
+
+void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
+    loadText();
+    adapter->execUttProcList(proc_list);
+}
+
+void DSMainWindow::resetUtterance() { adapter->resetUtterance(); }
+
 DSMainWindow::DSMainWindow(QWidget* parent):
     QMainWindow(parent),
     adapter(DSAdapter::createAdapter()),
     list_model(new DSListModel(this, adapter)),
     list_view(new QListView(this)),
     flow_dock(new DSFlowControlDockWidget(this, adapter)),
+    text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
     central_widget(new DSCentralWidget(this, adapter)),
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
     menu_bar(new QMenuBar(this))
-  //status_bar(new QStatusBar(this))
+    //status_bar(new QStatusBar(this))
 {
     setupUI();
     // setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
     //                                 qApp->desktop()->availableGeometry()));
+
     //Toglie il flag usando le operazioni bitwise (AND e NOT)
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
