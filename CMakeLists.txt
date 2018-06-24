@@ -48,7 +48,6 @@ set( HEADERS
     header/DSTreeItem.hpp
     header/DSListModel.hpp
     header/DSTextDockWidget.hpp
-    header/DSCentralWidget.hpp
     header/VNode.hpp
     header/VScene.hpp
     header/VArc.hpp
@@ -61,7 +60,6 @@ set( MOC_HEADERS
     #header/DSTreeItem.hpp Do not inherit from QObject
     header/DSListModel.hpp
     header/DSTextDockWidget.hpp
-    header/DSCentralWidget.hpp
     header/VNode.hpp
 )
 set( SOURCES
@@ -75,7 +73,6 @@ set( SOURCES
     source/DSTreeItem.cpp
     source/DSListModel.cpp
     source/DSTextDockWidget.cpp
-    source/DSCentralWidget.cpp
     source/VNode.cpp
     source/VScene.cpp
     source/VArc.cpp

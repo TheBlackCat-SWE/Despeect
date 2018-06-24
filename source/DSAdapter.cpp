@@ -191,6 +191,7 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
     }
     return true;
 }
+
 //FIXME Come mai non mi serve il testo?
 bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
     // Public interface non-const calls should check for internal integrity
@@ -231,7 +232,7 @@ bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
                  "Failed to run %s utterance processor on current utterance\n"),
                  utt_proc_key.c_str())
         return false;
-    std::cout << utt_proc_key << " utterance processor successfully executed";
+    std::cout << utt_proc_key << " utterance processor " << utt_proc_key <<"successfully executed";
     return true;
 }
 
