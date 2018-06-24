@@ -6,7 +6,6 @@
 #include "DSMainWindow.hpp"
 #include "DSAdapter.hpp"
 #include "DSListModel.hpp"
-#include "DSCentralWidget.hpp"
 #include <QIcon>
 #include <QMenu>
 #include <QList>
@@ -15,6 +14,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <string>
+#include <QDebug>
 
 
 void DSMainWindow::createActions() {
@@ -50,7 +50,7 @@ void DSMainWindow::setupUI() {
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
-    setCentralWidget(central_widget);
+    setCentralWidget(graph_view);
     setMenuBar(menu_bar);
     //tool_bar->setMovable(false);
     //addToolBar(Qt::TopToolBarArea, tool_bar);
@@ -89,10 +89,19 @@ void DSMainWindow::loadTextFromFile() {
 
 void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
     loadText();
-    adapter->execUttProcList(proc_list);
+
+    qDebug()<<proc_list.size(); // NON FUNZIONA PASSAGGIO della lista
+    /* adapter->execUttProcList(proc_list);  */
+
+//  qDebug()<<(adapter->execUttProc("Tokenize"));
+    qDebug()<< adapter->execUttType("text");
+    graph_scene->showGraph();
 }
 
-void DSMainWindow::resetUtterance() { adapter->resetUtterance(); }
+void DSMainWindow::resetUtterance() {
+    adapter->resetUtterance();
+    graph_scene->deleteGraph();
+}
 
 DSMainWindow::DSMainWindow(QWidget* parent):
     QMainWindow(parent),
@@ -102,7 +111,8 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     flow_dock(new DSFlowControlDockWidget(this, adapter)),
     text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
-    central_widget(new DSCentralWidget(this, adapter)),
+    graph_scene(new VScene(adapter, this)),
+    graph_view(new QGraphicsView(graph_scene, this)),
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
     menu_bar(new QMenuBar(this))
     //status_bar(new QStatusBar(this))
@@ -118,4 +128,8 @@ DSMainWindow::DSMainWindow(QWidget* parent):
 
 DSMainWindow::~DSMainWindow() {
     delete adapter;
+}
+
+void DSMainWindow::loadText() {
+    adapter->loadText(text_dock->getText().toStdString());
 }
