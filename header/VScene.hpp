@@ -21,6 +21,8 @@ public:
     void addVNode(int x, int y, DSItem* n, QColor c);
     void printArcs(VNode* n);
     void printArc(VNode* start, DSItem* end);
+
+    void deleteGraph();
 };
 
 #endif // VSCENE_H

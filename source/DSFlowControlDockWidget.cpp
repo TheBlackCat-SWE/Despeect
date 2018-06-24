@@ -59,10 +59,13 @@ void DSFlowControlDockWidget::run_all_clicked() {
 }
 
 void DSFlowControlDockWidget::run_step_clicked() {
-    if(proc_queue.isEmpty()) fillQueue();
+    if(proc_queue.isEmpty())
+        fillQueue();
     std::vector<std::string> proc_list;
-    proc_queue.dequeue().toStdString();
-    emit execUttProc(proc_list);
+    if(!proc_queue.isEmpty()) {
+        proc_list.push_back(proc_queue.dequeue().toStdString());
+        emit execUttProc(proc_list);
+    }
     //TODO Set arrow icon (and select) on last processor inside the view
 }
 
