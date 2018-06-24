@@ -91,10 +91,16 @@ void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
     loadText();
 
     qDebug()<<proc_list.size(); // NON FUNZIONA PASSAGGIO della lista
-    /* adapter->execUttProcList(proc_list);  */
 
 //  qDebug()<<(adapter->execUttProc("Tokenize"));
-    qDebug()<< adapter->execUttType("text");
+    std::vector<std::string> procs = adapter->getUttProcList();
+ /*   for(auto it= procs.begin(); it != procs.end(); it++)
+        qDebug()<<QString::fromStdString(*it);*/
+
+    qDebug()<< adapter->execUttProcList(proc_list);
+//  qDebug()<< adapter->execUttProc(procs.at(1));
+//  qDebug()<< adapter->execUttProc(procs.at(1));
+
     graph_scene->showGraph();
 }
 
