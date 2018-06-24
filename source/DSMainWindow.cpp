@@ -88,7 +88,9 @@ void DSMainWindow::loadTextFromFile() {
 
 void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
     loadText();
-    adapter->execUttProcList(proc_list);
+   /* adapter->execUttProcList(proc_list);
+    adapter->execUttProc(proc_list.at(0));*/
+    adapter->execUttType("text");
     graph_scene->showGraph();
 }
 
