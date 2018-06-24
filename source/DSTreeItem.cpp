@@ -8,7 +8,8 @@
 
 DSTreeItem::DSTreeItem(const QList<QVariant>& data, DSTreeItem* parent):
     item_data(data),
-    parent_item(parent)
+    parent_item(parent),
+    checked(false)
 {}
 
 void DSTreeItem::appendChild(DSTreeItem* child) { child_items.append(child); }
@@ -29,5 +30,9 @@ int DSTreeItem::columnCount() const { return item_data.count(); }
 QVariant DSTreeItem::data(int column) const { return item_data.value(column); }
 
 DSTreeItem *DSTreeItem::parentItem() { return parent_item; }
+
+bool DSTreeItem::isChecked() const { return checked; }
+
+void DSTreeItem::setChecked(bool val) { checked = val; }
 
 DSTreeItem::~DSTreeItem() { qDeleteAll(child_items); }

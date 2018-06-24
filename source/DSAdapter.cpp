@@ -5,6 +5,7 @@
 
 #include "DSAdapter.hpp"
 #include "DSRelation.hpp"
+#include <iostream>
 
 
 DSAdapter::DSAdapter() :
@@ -31,7 +32,8 @@ void DSAdapter::quitSpeect() {
 
 void DSAdapter::loadText(const std::string& text) {
     S_CLR_ERR(&error);
-    this->text = SObjectSetString(text.c_str(), &error);
+    if(!text.empty())
+        this->text = SObjectSetString(text.c_str(), &error);
     S_CHK_ERR(&error, S_CONTERR, "loadText",
               "Failed to load text\n");
 }
@@ -50,13 +52,12 @@ void DSAdapter::loadPlugin(const std::string& plugin_path) {
               "Failed to load &s plugin\n", plugin_path);
 }
 
-DSAdapter *DSAdapter::createAdapter(const std::string& voice_conf_path) {
+DSAdapter *DSAdapter::createAdapter() {
     DSAdapter* ptr = new DSAdapter;
 
     ptr->initSpeect(s_logger_console_new(true));
 
     if(!ptr->hasError()) {
-        ptr->loadVoice(voice_conf_path);
         ptr->loadPlugin("audio_riff.spi");
         return ptr;
     }
@@ -78,29 +79,6 @@ bool DSAdapter::loadInputText(const std::string& text) {
     loadText(text);
     S_CHK_ERR(&error, S_CONTERR, "loadInputText",
               "Failed to load input text\n");
-
-    if(!hasError()) return true;
-    else return false;
-}
-
-bool DSAdapter::synthesize() {
-    // Public interface non-const calls should check for internal integrity
-    if(hasError()) {
-        S_WARNING(error, "synthesize", "The system was found to be"
-                  " in an inconsistent state before this func call.\n"
-                  "This may result in unexpected behaviour\n");
-    }
-    // Checks whether loadInputText was called successfully
-    if(!text) {
-        S_WARNING(error, "synthesize", "Input text not loaded yet\n");
-        S_CLR_ERR(&error);
-        return false;
-    }
-
-    S_CLR_ERR(&error);
-    execUttType("text");
-    S_CHK_ERR(&error, S_CONTERR, "synthesize",
-              "Failed to complete synthesis process\n");
 
     if(!hasError()) return true;
     else return false;
@@ -132,6 +110,29 @@ bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
     return true;
 }
 
+bool DSAdapter::synthesize() {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "synthesize", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+    // Checks whether loadInputText was called successfully
+    if(!text) {
+        S_WARNING(error, "synthesize", "Input text not loaded yet\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+
+    S_CLR_ERR(&error);
+    execUttType("text");
+    S_CHK_ERR(&error, S_CONTERR, "synthesize",
+              "Failed to complete synthesis process\n");
+
+    if(!hasError()) return true;
+    else return false;
+}
+
 bool DSAdapter::execUttType(const std::string& utt_type) {
     // Public interface non-const calls should check for internal integrity
     if(hasError()) {
@@ -156,6 +157,99 @@ bool DSAdapter::execUttType(const std::string& utt_type) {
 
     if(!hasError()) return true;
     else return false;
+}
+
+bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "execUttProcList", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+    // Checks whether loadInputText was called successfully
+    if(!text) {
+        S_WARNING(error, "execUttProcList", "Input text not loaded yet\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+    // Creates and initializes a new utterance if needed
+    if(!utt) {
+        S_CLR_ERR(&error);
+        utt = S_NEW(SUtterance, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
+                     "Failed to create new utterance\n"))
+            return false;
+        S_CLR_ERR(&error);
+        SUtteranceInit(&utt, voice, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
+                     "Failed to initialize new utterance\n"))
+            return false;
+    }
+
+    for(auto&& utt_proc_key : proc_list) {
+        if(!execUttProc(utt_proc_key)) return false;
+    }
+    return true;
+}
+//FIXME Come mai non mi serve il testo?
+bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "execUttProc", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+    // Checks whether loadInputText was called successfully
+    if(!text) {
+        S_WARNING(error, "execUttProc", "Input text not loaded yet\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+    // Creates and initializes a new utterance if needed
+    if(!utt) {
+        S_CLR_ERR(&error);
+        utt = S_NEW(SUtterance, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                     "Failed to create new utterance\n"))
+            return false;
+        S_CLR_ERR(&error);
+        SUtteranceInit(&utt, voice, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                     "Failed to initialize new utterance\n"))
+            return false;
+    }
+
+    S_CLR_ERR(&error);
+    const SUttProcessor* utt_proc = SVoiceGetUttProc(voice, utt_proc_key.c_str(), &error);
+    if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                 "Failed to retrieve %s utterance processor pointer\n"),
+                 utt_proc_key.c_str())
+        return false;
+    S_CLR_ERR(&error);
+    SUttProcessorRun(utt_proc, utt, &error);
+    if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                 "Failed to run %s utterance processor on current utterance\n"),
+                 utt_proc_key.c_str())
+        return false;
+    std::cout << utt_proc_key << " utterance processor successfully executed";
+    return true;
+}
+
+bool DSAdapter::resetUtterance() {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "resetUtterance", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+        return false;
+    }
+
+    if(utt != NULL) {
+        S_DELETE(utt, "resetUtterance", &error);
+        std::cout << "Utterance successfully reset";
+        return true;
+    }
+    return false;
 }
 
 bool DSAdapter::hasError() const { return error != S_SUCCESS; }

@@ -43,9 +43,11 @@ set( HEADERS
     header/DSRelation.hpp
     header/DSItem.hpp
     header/DSMainWindow.hpp
+    header/DSFlowControlDockWidget.hpp
     header/DSTreeModel.hpp
     header/DSTreeItem.hpp
     header/DSListModel.hpp
+    header/DSTextDockWidget.hpp
     header/DSCentralWidget.hpp
     header/VNode.hpp
     header/VScene.hpp
@@ -54,9 +56,11 @@ set( HEADERS
 # Qt's Meta-Object-Compiler, required if the class has Q_OBJECT macro
 set( MOC_HEADERS
     header/DSMainWindow.hpp
+    header/DSFlowControlDockWidget.hpp
     header/DSTreeModel.hpp
     #header/DSTreeItem.hpp Do not inherit from QObject
     header/DSListModel.hpp
+    header/DSTextDockWidget.hpp
     header/DSCentralWidget.hpp
     header/VNode.hpp
 )
@@ -66,9 +70,11 @@ set( SOURCES
     source/DSRelation.cpp
     source/DSItem.cpp
     source/DSMainWindow.cpp
+    source/DSFlowControlDockWidget.cpp
     source/DSTreeModel.cpp
     source/DSTreeItem.cpp
     source/DSListModel.cpp
+    source/DSTextDockWidget.cpp
     source/DSCentralWidget.cpp
     source/VNode.cpp
     source/VScene.cpp
