@@ -103,15 +103,21 @@ void VScene::printRel(std::string name, QColor color) {
 
 void VScene::showGraph() {
     std::vector<std::string> rels = adapter->getRelList();
-    printRel(rels[0], Qt::red);
+    for(auto it = rels.begin(); it != rels.end(); it++)
+       printRel(*it, Qt::red);
+  /*  printRel(rels[0], Qt::red);
     printRel(rels[1], Qt::green);
     printRel(rels[2], Qt::cyan);
     printRel(rels[3], Qt::blue);
     printRel(rels[4], Qt::white);
     printRel(rels[5], Qt::yellow);
-    printRel(rels[6], Qt::black);
+    printRel(rels[6], Qt::black);*/
 
     for(auto it = nodes.begin(); it != nodes.end(); it++) {
         printArcs((*it));
     }
+}
+
+void VScene::deleteGraph() {
+    clear();
 }
