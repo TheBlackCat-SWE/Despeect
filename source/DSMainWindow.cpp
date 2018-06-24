@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <string>
+#include <QDebug>
 
 
 void DSMainWindow::createActions() {
@@ -88,14 +89,18 @@ void DSMainWindow::loadTextFromFile() {
 
 void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
     loadText();
-   /* adapter->execUttProcList(proc_list);
-    adapter->execUttProc(proc_list.at(0));*/
-    adapter->execUttType("text");
+
+    qDebug()<<proc_list.size(); // NON FUNZIONA PASSAGGIO della lista
+    /* adapter->execUttProcList(proc_list);  */
+
+//  qDebug()<<(adapter->execUttProc("Tokenize"));
+    qDebug()<< adapter->execUttType("text");
     graph_scene->showGraph();
 }
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
+    graph_scene->deleteGraph();
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):

@@ -117,3 +117,7 @@ void VScene::showGraph() {
         printArcs((*it));
     }
 }
+
+void VScene::deleteGraph() {
+    clear();
+}
