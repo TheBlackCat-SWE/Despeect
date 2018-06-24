@@ -57,14 +57,12 @@ public:
      * Uses Named Constructor Idiom for 2-fase construction permitting
      * the halt of the construction if some component fails to initialize,
      * and to return a null pointer to the caller.
-     * @param voice_conf_path Path to the .json configuration for the
-     * selected voice.
      * @return A pointer to the @c DSAdapter created, if the construction has
      * not encountered any errors, NULL otherwise.
      * @note The caller is responsible for the memory of the returned
      * @c DSAdapter.
      */
-    static DSAdapter* createAdapter(const std::string& voice_conf_path);
+    static DSAdapter* createAdapter();
     /**
      * @brief quitSpeect
      * Requests a graceful shutdown of the Speect Engine.
@@ -124,6 +122,10 @@ public:
     bool execUttType(const std::string& utt_type);
 
     // TODO Add more manual controls to change internal speect state
+
+    bool execUttProcList(const std::vector<std::string>& proc_list);
+    bool execUttProc(const std::string& utt_proc_key);
+    bool resetUtterance();
 
     // --------------------------- DANGER ZONE ---------------------------
 

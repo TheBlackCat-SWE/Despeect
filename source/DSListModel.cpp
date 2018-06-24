@@ -17,12 +17,15 @@ void DSListModel::setupModelData() {
         list << QString::fromStdString(str);
 }
 
+void DSListModel::fetchData() {
+    setupModelData();
+    layoutChanged();
+}
+
 DSListModel::DSListModel(QObject* parent, DSAdapter* adapter):
     QAbstractListModel(parent),
     adapter(adapter)
-{
-    setupModelData();
-}
+{}
 
 int DSListModel::rowCount(const QModelIndex& parent) const {
     return list.size();

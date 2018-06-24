@@ -5,131 +5,115 @@
 
 #include "DSMainWindow.hpp"
 #include "DSAdapter.hpp"
-#include "DSTreeModel.hpp"
 #include "DSListModel.hpp"
 #include "DSCentralWidget.hpp"
-#include <string>
+#include <QIcon>
+#include <QMenu>
+#include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+#include <string>
 
 
 void DSMainWindow::createActions() {
-    /* EXAMPLE CODE
-        list->append(new QAction(QIcon(":/resources/icons/exec.png"), "Esegui", this)); //[0] execAct
-        for(int i = 0; i < list->size(); i++) tool_bar->addAction(list->at(i));
-        tool_bar->insertSeparator(list->at(n));
-        */
-    createActionLoadVoice();
-    createActionShowVoicePath();
+    actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
+    actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
 }
 
 void DSMainWindow::createMenus() {
         QMenu* fileMenu = new QMenu("File", this);
-        for(int i = 0; i < actions.size(); i++) {
-            fileMenu->addAction(actions.at(i));
+        QList<QString> action_key = actions.keys();
+        for(int i = 0; i < action_key.size(); i++) {
+            fileMenu->addAction(actions[action_key[i]]);
             // if(i == 2 || i == 6) fileMenu->addSeparator();
         }
-        fileMenu->addSeparator();
-
-        QAction* exitAct = new QAction(QIcon(":/Risorse/Icons/exit.png"), "Esci", this);
-        fileMenu->addAction(exitAct);
-        connect(exitAct, &QAction::triggered, this, &DSMainWindow::close);
-
+        //fileMenu->addSeparator();
         menu_bar->addMenu(fileMenu);
 }
 
 void DSMainWindow::doConnections() {
-    // connect(list->at(0), &QAction::triggered, /*Widget Pointer*/, /*Widget Slot*/);
+    connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
+    connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
+    connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
+    connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
+    connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
+    connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
+    connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
 void DSMainWindow::setupUI() {
-
-    tree_view->setModel(tree_model);
-    tree_dock->setWidget(tree_view);
     list_view->setModel(list_model);
     list_dock->setWidget(list_view);
-    addDockWidget(Qt::LeftDockWidgetArea, tree_dock);
+    addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
+    addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(central_widget);
-    tool_bar->setMovable(false);
-    addToolBar(Qt::TopToolBarArea, tool_bar);
-    status_bar->setSizeGripEnabled(false);
-    status_bar->setStyleSheet("color: red");
-    setStatusBar(status_bar);
+    setMenuBar(menu_bar);
+    //tool_bar->setMovable(false);
+    //addToolBar(Qt::TopToolBarArea, tool_bar);
+    //status_bar->setSizeGripEnabled(false);
+    //status_bar->setStyleSheet("color: red");
+    //setStatusBar(status_bar);
 
     createActions();
     createMenus();
     doConnections();
 }
 
+void DSMainWindow::loadVoice() {
+    voice_path = QFileDialog::getOpenFileName(this, "Oper Configuration File",
+                                              "../../", "Voice Files (*.json)");
+    if(!voice_path.isEmpty()) {
+        adapter->loadVoice(voice_path.toStdString());
+        emit fetchData();
+    }
+}
+
+void DSMainWindow::showVoicePath() {
+    QMessageBox msgBox;
+    msgBox.setText(voice_path);
+    msgBox.exec();
+}
+
+void DSMainWindow::loadTextFromFile() {
+    QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
+                                                     "../../", "Text Files (*.txt)");
+    QFile file(file_path);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream read_file(&file);
+    text_dock->setText(read_file.readAll());
+}
+
+void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
+    loadText();
+    adapter->execUttProcList(proc_list);
+}
+
+void DSMainWindow::resetUtterance() { adapter->resetUtterance(); }
+
 DSMainWindow::DSMainWindow(QWidget* parent):
     QMainWindow(parent),
-    /*
-     * Be sure to provide DSAdapter with the correct path depending on
-     * your install.sh script location
-     */
-    voice_path("/home/luca/Scrivania/Progetto-Graphite/TBC_PoC"
-               "/SpeectLib/voices/meraka_lwazi2_alta/voice.json"),
-    adapter(DSAdapter::createAdapter(voice_path)),
-    tree_model(new DSTreeModel(this, adapter)),
-    tree_view(new QTreeView(this)),
+    adapter(DSAdapter::createAdapter()),
     list_model(new DSListModel(this, adapter)),
     list_view(new QListView(this)),
-    tree_dock(new QDockWidget("Utterance Type", this)),
+    flow_dock(new DSFlowControlDockWidget(this, adapter)),
+    text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
     central_widget(new DSCentralWidget(this, adapter)),
-    tool_bar(new QToolBar("Barra Degli Strumenti", this)),
-    menu_bar(new QMenuBar(this)),
-    status_bar(new QStatusBar(this))
+    //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
+    menu_bar(new QMenuBar(this))
+    //status_bar(new QStatusBar(this))
 {
-    std::string text =
-            "Hello Judith. How are you?";
-    /*
-    std::string audio_output_path =
-            "/home/ricc/Workspace-QtCreator/Despeect/output.wav";
-    */
- /*   if(adapter)
-        if(adapter->loadInputText(text))
-            adapter->synthesize();*/
-            // if(adapter->synthesize()) adapter->saveOutputAudio(audio_output_path);
-
     setupUI();
     // setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
     //                                 qApp->desktop()->availableGeometry()));
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
     //Toglie il flag usando le operazioni bitwise (AND e NOT)
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
-}
-
-void DSMainWindow::createActionLoadVoice() {
-    const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":/images/open.png"));
-
-    QAction *openAct = new QAction(openIcon, QObject::tr("Load Configuration File"), this);
-    openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Load Configuration File"));
-    QObject::connect(openAct,
-                     &QAction::triggered,
-                     [=] () {
-                             QString path = QFileDialog::getOpenFileName(this,QObject::tr("Oper Configuration File"), "../../", QObject::tr("Voice Files (*.json)"));
-                             voice_path = path.toStdString();
-                             adapter->loadVoice(voice_path);
-                        });
-    actions.push_back(openAct);
-}
-
-void DSMainWindow::createActionShowVoicePath() {
-    const QIcon openIcon = QIcon::fromTheme("dialog-information");
-    QAction *openAct = new QAction(openIcon, QObject::tr("Show Voice Path"), this);
-    openAct->setStatusTip(tr("Show Voice Path"));
-    QObject::connect(openAct,
-                     &QAction::triggered,
-                     [this] () {
-        QMessageBox msgBox;
-        msgBox.setText(voice_path.c_str());
-        msgBox.exec();
-    });
-    actions.push_back(openAct);
 }
 
 DSMainWindow::~DSMainWindow() {
