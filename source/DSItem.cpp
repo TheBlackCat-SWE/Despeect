@@ -20,8 +20,9 @@ std::string DSItem::getName() const {
     s_erc error = S_SUCCESS;
 
     const char* name = SItemGetName(item, &error);
-    if(S_CHK_ERR(&error, S_CONTERR, "getName",
-              "Failed to retrieve item name\n"))
+    if(error != S_SUCCESS)
+  /*  if(S_CHK_ERR(&error, S_CONTERR, "getName",
+              "Failed to retrieve item name\n"))*/
         return "";
     return std::string(name);
 }

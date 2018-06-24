@@ -8,6 +8,7 @@
 
 #include "DSFlowControlDockWidget.hpp"
 #include "DSTextDockWidget.hpp"
+#include "VScene.hpp"
 #include <QMainWindow>
 #include <QString>
 #include <QTreeView>
@@ -19,11 +20,10 @@
 #include <QMap>
 #include <QAction>
 #include <QWidget>
-
+#include <QGraphicsView>
 
 class DSAdapter;
 class DSListModel;
-class DSCentralWidget;
 
 class DSMainWindow: public QMainWindow {
     Q_OBJECT
@@ -35,7 +35,9 @@ private:
     DSFlowControlDockWidget* flow_dock;
     DSTextDockWidget* text_dock;
     QDockWidget* list_dock;
-    DSCentralWidget* central_widget;
+    VScene* graph_scene;
+    QGraphicsView* graph_view;
+
     //QToolBar* tool_bar;
     QMenuBar* menu_bar;
     //QStatusBar* status_bar;
@@ -55,9 +57,7 @@ private slots:
     void loadVoice();
     void showVoicePath();
     void loadTextFromFile();
-    void loadText() {
-        //Load text into DSAdapter
-    }
+    void loadText();
     void execUttProc(const std::vector<std::string>& proc_list);
     void resetUtterance();
 public:
