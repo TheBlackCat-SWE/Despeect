@@ -5,7 +5,7 @@
 
 #include "DSAdapter.hpp"
 #include "DSRelation.hpp"
-#include <iostream>
+#include <QDebug>
 
 
 DSAdapter::DSAdapter() :
@@ -184,6 +184,8 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
         if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
                      "Failed to initialize new utterance\n"))
             return false;
+        //set the text of the utterance that speect will use to the one of the configuration
+        SUtteranceSetFeature(utt,"input",SObjectSetString(getText().c_str(),&error), &error);
     }
 
     for(auto&& utt_proc_key : proc_list) {
@@ -191,6 +193,7 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
     }
     return true;
 }
+
 //FIXME Come mai non mi serve il testo?
 bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
     // Public interface non-const calls should check for internal integrity
@@ -205,8 +208,9 @@ bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
         S_CLR_ERR(&error);
         return false;
     }
+
     // Creates and initializes a new utterance if needed
-    if(!utt) {
+  /*  if(!utt) {
         S_CLR_ERR(&error);
         utt = S_NEW(SUtterance, &error);
         if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
@@ -217,21 +221,29 @@ bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
         if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
                      "Failed to initialize new utterance\n"))
             return false;
-    }
+    }*/
 
     S_CLR_ERR(&error);
+
     const SUttProcessor* utt_proc = SVoiceGetUttProc(voice, utt_proc_key.c_str(), &error);
-    if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
-                 "Failed to retrieve %s utterance processor pointer\n"),
-                 utt_proc_key.c_str())
+
+   /* if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                 "Failed to retrieve utterance processor pointer\n"),
+            utt_proc_key.c_str()) {
+        S_WARNING(error, "execUttProc", "Error Loading Processor from voice \n");
         return false;
+    }*/
+
     S_CLR_ERR(&error);
     SUttProcessorRun(utt_proc, utt, &error);
-    if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
-                 "Failed to run %s utterance processor on current utterance\n"),
-                 utt_proc_key.c_str())
+
+  /*  if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+            "Failed to run %s utterance processor on current utterance\n"),
+            utt_proc_key.c_str()) {
+        S_WARNING(error, "execUttProc", utt_proc_key.c_str());
         return false;
-    std::cout << utt_proc_key << " utterance processor successfully executed";
+    }*/
+
     return true;
 }
 
@@ -246,7 +258,7 @@ bool DSAdapter::resetUtterance() {
 
     if(utt != NULL) {
         S_DELETE(utt, "resetUtterance", &error);
-        std::cout << "Utterance successfully reset";
+        qDebug() << "Utterance successfully reset";
         return true;
     }
     return false;
@@ -357,7 +369,7 @@ std::vector<std::string> DSAdapter::getUttProcList() const {
               "Failed to retrieve utterance processor keys\n");
     std::vector<std::string> std_list(toStdList(list));
 
-    S_DELETE(list, "getUttProcList", &error);
+    //S_DELETE(list, "getUttProcList", &error);
     return std_list;
 }
 

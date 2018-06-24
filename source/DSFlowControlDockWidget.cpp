@@ -2,6 +2,7 @@
 #include "DSTreeItem.hpp"
 #include <vector>
 #include <string>
+#include "QDebug"
 
 
 void DSFlowControlDockWidget::setupUI() {
@@ -30,12 +31,15 @@ void DSFlowControlDockWidget::fillQueue() {
          */
     reset_clicked();
     QModelIndex root = tree_view->rootIndex();
+    qDebug() << "checked";
     if(root.isValid()) {
+        qDebug() << "checked";
         for(int i = 0; tree_model->rowCount(root); i++) {
             QModelIndex utt_type = tree_model->index(i, 0, root);
             for(int j = 0; tree_model->rowCount(utt_type); j++) {
-                QModelIndex utt_proc = tree_model->index(i, 0, utt_type);
+                QModelIndex utt_proc = tree_model->index(i, j, utt_type);
                 DSTreeItem* item = static_cast<DSTreeItem*>(utt_proc.internalPointer());
+                qDebug() << "checked";
                 if(item->isChecked())
                     proc_queue.enqueue(item->data(utt_proc.column()).toString());
             }
@@ -59,10 +63,13 @@ void DSFlowControlDockWidget::run_all_clicked() {
 }
 
 void DSFlowControlDockWidget::run_step_clicked() {
-    if(proc_queue.isEmpty()) fillQueue();
+    if(proc_queue.isEmpty())
+        fillQueue();
     std::vector<std::string> proc_list;
-    proc_queue.dequeue().toStdString();
-    emit execUttProc(proc_list);
+    if(!proc_queue.isEmpty()) {
+        proc_list.push_back(proc_queue.dequeue().toStdString());
+        emit execUttProc(proc_list);
+    }
     //TODO Set arrow icon (and select) on last processor inside the view
 }
 

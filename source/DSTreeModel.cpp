@@ -10,6 +10,7 @@
 #include <string>
 #include <QList>
 #include <QString>
+#include <QModelIndex>
 
 
 void DSTreeModel::setupModelData() {
