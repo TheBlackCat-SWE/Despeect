@@ -8,7 +8,7 @@
 
 #include "DSFlowControlDockWidget.hpp"
 #include "DSTextDockWidget.hpp"
-#include "VScene.hpp"
+#include "graphmanager.hpp"
 #include <QMainWindow>
 #include <QString>
 #include <QTreeView>
@@ -35,13 +35,16 @@ private:
     DSFlowControlDockWidget* flow_dock;
     DSTextDockWidget* text_dock;
     QDockWidget* list_dock;
-    VScene* graph_scene;
+    GraphManager* graph_manager;
     QGraphicsView* graph_view;
 
     //QToolBar* tool_bar;
     QMenuBar* menu_bar;
     //QStatusBar* status_bar;
     QMap<QString, QAction*> actions;
+
+    //Field: list of all colors available to print the graph
+    QVector<QColor>colors;
 
     void createActions();
     void createMenus();
