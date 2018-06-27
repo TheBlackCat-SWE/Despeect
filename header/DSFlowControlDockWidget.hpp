@@ -34,7 +34,8 @@ private:
     void fillQueue();
     void doConnections();
 signals:
-    void execUttProc(const std::vector<std::string>& proc_list);
+    void execUttProc(std::string);
+    void execUttProcList(const std::vector<std::string>& proc_list);
     void resetUtterance();
 public slots:
     void run_all_clicked();

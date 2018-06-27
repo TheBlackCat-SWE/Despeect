@@ -30,18 +30,15 @@ void DSFlowControlDockWidget::fillQueue() {
          * diversi, volendo selezionare quello giusto in run_step
          */
     reset_clicked();
-    QModelIndex root = tree_view->rootIndex();
-    qDebug() << "checked";
-    if(root.isValid()) {
-        qDebug() << "checked";
-        for(int i = 0; tree_model->rowCount(root); i++) {
-            QModelIndex utt_type = tree_model->index(i, 0, root);
-            for(int j = 0; tree_model->rowCount(utt_type); j++) {
-                QModelIndex utt_proc = tree_model->index(i, j, utt_type);
-                DSTreeItem* item = static_cast<DSTreeItem*>(utt_proc.internalPointer());
-                qDebug() << "checked";
-                if(item->isChecked())
-                    proc_queue.enqueue(item->data(utt_proc.column()).toString());
+
+    DSTreeItem* root = tree_model->getRoot();
+    if(root) {
+        for(int i = 0; i < root->childCount(); i++) {
+            DSTreeItem* utt_type = root->child(i);
+            for(int j = 0; j < utt_type->childCount(); j++) {
+                DSTreeItem* utt_proc = utt_type->child(j);
+                if(utt_proc->isChecked())
+                    proc_queue.enqueue(utt_proc->data(0).toString());
             }
         }
     }
@@ -58,17 +55,15 @@ void DSFlowControlDockWidget::run_all_clicked() {
     std::vector<std::string> proc_list;
     while(!proc_queue.isEmpty())
         proc_list.push_back(proc_queue.dequeue().toStdString());
-    emit execUttProc(proc_list);
+    emit execUttProcList(proc_list);
     //TODO Set arrow icon (and select) on last processor inside the view
 }
 
 void DSFlowControlDockWidget::run_step_clicked() {
     if(proc_queue.isEmpty())
         fillQueue();
-    std::vector<std::string> proc_list;
     if(!proc_queue.isEmpty()) {
-        proc_list.push_back(proc_queue.dequeue().toStdString());
-        emit execUttProc(proc_list);
+        emit execUttProc(proc_queue.dequeue().toStdString());
     }
     //TODO Set arrow icon (and select) on last processor inside the view
 }
