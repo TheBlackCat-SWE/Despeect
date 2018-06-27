@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
         DSMainWindow main_win;
         main_win.setWindowState(Qt::WindowMaximized);
         main_win.show();
+        //set locale to C so that speect produce the right audio
+        std::setlocale(LC_ALL, "C");
         a.exec();
 }
 

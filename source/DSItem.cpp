@@ -23,7 +23,6 @@ std::string DSItem::getName() const {
         return "";
 }
 
-
 std::string DSItem::getPath() const {
     s_erc error = S_SUCCESS;
     const SItem * it = const_cast<const SItem *>(item);
@@ -50,7 +49,7 @@ std::string DSItem::getPath() const {
                 fail=true;
         }
     }
-    return fail?"":path=" "+path;
+    return fail ? "" : path=" "+path;
 }
 
 std::string DSItem::getRelation() const {

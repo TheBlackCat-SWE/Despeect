@@ -60,6 +60,8 @@ void DSMainWindow::setupUI() {
     //status_bar->setStyleSheet("color: red");
     //setStatusBar(status_bar);
 
+    graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
     createActions();
     createMenus();
     doConnections();
