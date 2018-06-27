@@ -6,6 +6,7 @@
 #include "DSMainWindow.hpp"
 #include "DSAdapter.hpp"
 #include "DSListModel.hpp"
+#include "DSRelation.hpp"
 #include <QIcon>
 #include <QMenu>
 #include <QList>
@@ -91,19 +92,37 @@ void DSMainWindow::loadTextFromFile() {
 void DSMainWindow::execUttProc(std::string utt_proc) {
     loadText();
     adapter->execUttProc(utt_proc);
-    graph_scene->showGraph();
+    int i=0;
+    graph_manager->clear();
+    foreach (auto t,adapter->getRelList())
+    {
+        const DSRelation* currentRelation = adapter->getRel(t);
+        DSItem* temp = currentRelation->getHead();
+        graph_manager->printRelation(QString(t.c_str()), temp, colors.at(i%colors.size()));
+        delete currentRelation;
+        ++i;
+    }
 }
 
 void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
     loadText();
     adapter->execUttProcList(proc_list);
-    graph_scene->deleteGraph();
-    graph_scene->showGraph();
+
+    int i=0;
+    graph_manager->clear();
+    foreach (auto t,adapter->getRelList())
+    {
+        const DSRelation* currentRelation = adapter->getRel(t);
+        DSItem* temp = currentRelation->getHead();
+        if(temp)
+            graph_manager->printRelation(QString(t.c_str()), temp, colors.at(i%colors.size()));
+        ++i;
+    }
 }
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
-    graph_scene->deleteGraph();
+    graph_manager->clear();
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):
@@ -114,8 +133,8 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     flow_dock(new DSFlowControlDockWidget(this, adapter)),
     text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
-    graph_scene(new VScene(adapter, this)),
-    graph_view(new QGraphicsView(graph_scene, this)),
+    graph_manager(new GraphManager()),
+    graph_view(new QGraphicsView(this)),
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
     menu_bar(new QMenuBar(this))
     //status_bar(new QStatusBar(this))
@@ -127,6 +146,19 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     //Toglie il flag usando le operazioni bitwise (AND e NOT)
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
+    graph_manager->linkGraphModel(graph_view);
+
+    //this is the relations colors after 10 relation start from beginning
+    colors.push_back(QColor(qRgb(213,0,0)));
+    colors.push_back(QColor(qRgb(120,144,156)));
+    colors.push_back(QColor(qRgb(170,0,255)));
+    colors.push_back(QColor(qRgb(109,76,65)));
+    colors.push_back(QColor(qRgb(251,140,0)));
+    colors.push_back(QColor(qRgb(67,160,61)));
+    colors.push_back(QColor(qRgb(41,98,255)));
+    colors.push_back(QColor(qRgb(255,214,0)));
+    colors.push_back(QColor(qRgb(0,184,212)));
+    colors.push_back(QColor(qRgb(0,191,165)));
 }
 
 DSMainWindow::~DSMainWindow() {

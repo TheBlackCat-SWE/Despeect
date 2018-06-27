@@ -48,9 +48,13 @@ set( HEADERS
     header/DSTreeItem.hpp
     header/DSListModel.hpp
     header/DSTextDockWidget.hpp
-    header/VNode.hpp
-    header/VScene.hpp
-    header/VArc.hpp
+    header/arc.hpp
+    header/graphmanager.hpp
+    header/id.hpp
+    header/node.hpp
+    header/line.hpp
+    header/processormanager.hpp
+    header/datanodemanager.hpp
 )
 # Qt's Meta-Object-Compiler, required if the class has Q_OBJECT macro
 set( MOC_HEADERS
@@ -60,7 +64,12 @@ set( MOC_HEADERS
     #header/DSTreeItem.hpp Do not inherit from QObject
     header/DSListModel.hpp
     header/DSTextDockWidget.hpp
-    header/VNode.hpp
+    header/arc.hpp
+    header/graphmanager.hpp
+    header/node.hpp
+    header/line.hpp
+    header/processormanager.hpp
+    header/datanodemanager.hpp
 )
 set( SOURCES
     source/main.cpp
@@ -73,9 +82,13 @@ set( SOURCES
     source/DSTreeItem.cpp
     source/DSListModel.cpp
     source/DSTextDockWidget.cpp
-    source/VNode.cpp
-    source/VScene.cpp
-    source/VArc.cpp
+    source/arc.cpp
+    source/graphmanager.cpp
+    source/id.cpp
+    source/node.cpp
+    source/line.cpp
+    source/processormanager.cpp
+    source/datanodemanager.cpp
 )
 
 add_executable(Despeect ${SOURCES} ${HEADERS} ${MOC_HEADERS})

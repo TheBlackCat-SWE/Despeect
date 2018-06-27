@@ -16,16 +16,49 @@ DSItem* DSItem::create(const SItem* item) {
 }
 
 std::string DSItem::getName() const {
-    s_erc error = S_SUCCESS;
-    std::string std_name = "";
-    if(SItemFeatureIsPresent(item, "name", &error)) {
-        const char* name = SItemGetName(item, &error);
-        if(S_CHK_ERR(&error, S_CONTERR, "getName", "Failed to retrieve item name\n"))
-            return "";
-        return std::string(name);
-    }
+    s_erc error=S_SUCCESS;
+    if(SItemFeatureIsPresent(item,"name",&error))
+        return SItemGetName(item,&error);
+    else
+        return "";
 }
 
+
+std::string DSItem::getPath() const {
+    s_erc error = S_SUCCESS;
+    const SItem * it = const_cast<const SItem *>(item);
+    std::string path="";
+    const SRelation* rel=SItemRelation(it,&error);
+    bool fail=false;
+    SItem *temp=NULL;
+    while(!SItemEqual(it,SRelationHead(rel,&error),&error)&&!fail)
+    {
+        temp=SItemPrev(it,&error);
+        if(temp!=NULL)
+        {
+            path=".n"+path;
+            it=temp;
+        }
+        else{
+            temp=SItemParent(it,&error);
+            if(temp!=NULL)
+            {
+                path=".daughter"+path;
+                it=temp;
+            }
+            else
+                fail=true;
+        }
+    }
+    return fail?"":path=" "+path;
+}
+
+std::string DSItem::getRelation() const {
+    s_erc error = S_SUCCESS;
+    const SRelation* rel=SItemRelation(item,&error);
+    std::string relName = std::string(SRelationName(rel,&error));
+    return relName;
+}
 
 DSItem *DSItem::next() const {
     s_erc error = S_SUCCESS;
