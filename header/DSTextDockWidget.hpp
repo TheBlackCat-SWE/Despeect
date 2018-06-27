@@ -46,7 +46,7 @@ public:
     {
         setupUI();
     }
-    QString getText() const { return text_edit->toPlainText(); }
+    QString getText() const { return text_edit->toPlainText().trimmed(); }
     void setText(const QString& text) { text_edit->setPlainText(text); }
 };
 

@@ -22,6 +22,7 @@ class DSItem {
 private:
     const SItem* item;
     DSItem(const SItem* item);
+
 public:
     static DSItem* create(const SItem* item);
 
@@ -49,6 +50,7 @@ public:
     std::string getId() const {
         return getRelation()+":"+getPath();
     }
+
     /**
      * @brief next
      * Gets the item next to the given one in the current relation.

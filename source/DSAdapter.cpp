@@ -67,23 +67,6 @@ DSAdapter *DSAdapter::createAdapter() {
     }
 }
 
-bool DSAdapter::loadInputText(const std::string& text) {
-    // Public interface non-const calls should check for internal integrity
-    if(hasError()) {
-        S_WARNING(error, "loadInputText", "The system was found to be"
-                  " in an inconsistent state before this func call.\n"
-                  "This may result in unexpected behaviour\n");
-    }
-
-    S_CLR_ERR(&error);
-    loadText(text);
-    S_CHK_ERR(&error, S_CONTERR, "loadInputText",
-              "Failed to load input text\n");
-
-    if(!hasError()) return true;
-    else return false;
-}
-
 bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
     // Public interface non-const calls should check for internal integrity
     if(hasError()) {
@@ -101,6 +84,7 @@ bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
         return false;
     }
     SObjectSave(audio_obj, audio_output_path.c_str(), "riff", &error);
+    delete audio_obj;
     if(hasError()) {
         S_WARNING(error, "saveOutputAudio", "Failed to save audio object, "
                   "error using 'audio_riff' plugin\n");
@@ -172,6 +156,7 @@ bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
         S_CLR_ERR(&error);
         return false;
     }
+
     resetUtterance();
     // Creates and initializes a new utterance if needed
     if(!utt) {
@@ -264,18 +249,19 @@ bool DSAdapter::resetUtterance() {
 
     if(utt != NULL) {
         S_DELETE(utt, "resetUtterance", &error);
+        delete utt;
         return true;
     }
     return false;
 }
 
-bool DSAdapter::hasError() const { return error != S_SUCCESS; }
+bool DSAdapter::hasError() const {
+    return error != S_SUCCESS;
+}
 
 std::string DSAdapter::getText() const {
     s_erc error = S_SUCCESS;
-
     std::string str = std::string(SObjectGetString(text, &error));
-
     S_CHK_ERR(&error, S_CONTERR, "getText",
               "Failed to get text string\n");
     return str;

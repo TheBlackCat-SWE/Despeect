@@ -83,13 +83,7 @@ public:
      * found.
      */
     void loadVoice(const std::string& voice_conf_path);
-    /**
-     * @brief loadInputText
-     * Loads a string of input text in the internal memory for later usage.
-     * @param text The string of text to be synthesized.
-     * @return True on success, false otherwise.
-     */
-    bool loadInputText(const std::string& text);
+
     // TODO loadInputTextFile
 
     // --------------------------- DANGER ZONE ---------------------------
