@@ -119,5 +119,8 @@ void VScene::showGraph() {
 }
 
 void VScene::deleteGraph() {
+   /* for(auto it = nodes.begin(); it != nodes.end(); it++)
+        delete *it;*/
+    nodes.clear();
     clear();
 }

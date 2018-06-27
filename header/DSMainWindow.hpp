@@ -58,7 +58,8 @@ private slots:
     void showVoicePath();
     void loadTextFromFile();
     void loadText();
-    void execUttProc(const std::vector<std::string>& proc_list);
+    void execUttProc(std::string utt_proc);
+    void execUttProcList(const std::vector<std::string>& proc_list);
     void resetUtterance();
 public:
     DSMainWindow(QWidget* parent = Q_NULLPTR);

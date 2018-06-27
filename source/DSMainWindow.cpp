@@ -39,6 +39,7 @@ void DSMainWindow::doConnections() {
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
     connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
+    connect(flow_dock, &DSFlowControlDockWidget::execUttProcList, this, &DSMainWindow::execUttProcList);
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
@@ -87,20 +88,16 @@ void DSMainWindow::loadTextFromFile() {
     text_dock->setText(read_file.readAll());
 }
 
-void DSMainWindow::execUttProc(const std::vector<std::string> &proc_list) {
+void DSMainWindow::execUttProc(std::string utt_proc) {
     loadText();
+    adapter->execUttProc(utt_proc);
+    graph_scene->showGraph();
+}
 
-    qDebug()<<proc_list.size(); // NON FUNZIONA PASSAGGIO della lista
-
-//  qDebug()<<(adapter->execUttProc("Tokenize"));
-    std::vector<std::string> procs = adapter->getUttProcList();
- /*   for(auto it= procs.begin(); it != procs.end(); it++)
-        qDebug()<<QString::fromStdString(*it);*/
-
-    qDebug()<< adapter->execUttProcList(proc_list);
-//  qDebug()<< adapter->execUttProc(procs.at(1));
-//  qDebug()<< adapter->execUttProc(procs.at(1));
-
+void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
+    loadText();
+    adapter->execUttProcList(proc_list);
+    graph_scene->deleteGraph();
     graph_scene->showGraph();
 }
 
