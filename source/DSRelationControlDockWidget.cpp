@@ -14,6 +14,8 @@ void DSRelationControlDockWidget::setupUI() {
     internalWidget->setLayout(v_layout);
     setWidget(internalWidget);
     setWindowTitle("Relations");
+
+    fetchData();
 }
 
 void DSRelationControlDockWidget::fillQueue() {
@@ -23,16 +25,16 @@ void DSRelationControlDockWidget::fillQueue() {
 
 void DSRelationControlDockWidget::doConnections() {
 
+    connect(show_all_button,&QPushButton::clicked,this, &DSRelationControlDockWidget::showAllClicked);
 
 }
 
 void DSRelationControlDockWidget::showAllClicked() {
-
-
+fetchData();
 }
 
 void DSRelationControlDockWidget::showSingleClicked() {
-
+fetchData();
 }
 
 void DSRelationControlDockWidget::fetchData() {

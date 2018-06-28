@@ -65,6 +65,8 @@ private slots:
     void loadText();
     void execUttProc(std::string utt_proc);
     void execUttProcList(const std::vector<std::string>& proc_list);
+    void showRelation();
+    void showAllRelation();
     void resetUtterance();
 public:
     DSMainWindow(QWidget* parent = Q_NULLPTR);
