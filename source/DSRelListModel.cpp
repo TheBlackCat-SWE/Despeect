@@ -19,7 +19,7 @@ void DSRelListModel::setupModelData() {
 }
 
 void DSRelListModel::fetchData() {
-    if(list.isEmpty()){
+    if(!list.isEmpty()){
         list = QStringList();
     }
         setupModelData();

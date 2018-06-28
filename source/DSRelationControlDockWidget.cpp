@@ -15,7 +15,6 @@ void DSRelationControlDockWidget::setupUI() {
     setWidget(internalWidget);
     setWindowTitle("Relations");
 
-    fetchData();
 }
 
 void DSRelationControlDockWidget::fillQueue() {
