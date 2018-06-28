@@ -7,6 +7,7 @@
 #define DSMAINWINDOW_H
 
 #include "DSFlowControlDockWidget.hpp"
+#include "DSRelationControlDockWidget.hpp"
 #include "DSTextDockWidget.hpp"
 #include "graphmanager.hpp"
 #include <QMainWindow>
@@ -33,6 +34,7 @@ private:
     DSListModel* list_model;
     QListView* list_view;
     DSFlowControlDockWidget* flow_dock;
+    DSRelationControlDockWidget* rel_dock;
     DSTextDockWidget* text_dock;
     QDockWidget* list_dock;
     GraphManager* graph_manager;
