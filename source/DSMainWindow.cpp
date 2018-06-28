@@ -42,6 +42,8 @@ void DSMainWindow::doConnections() {
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProcList, this, &DSMainWindow::execUttProcList);
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
+    connect(rel_dock,&DSRelationControlDockWidget::showSingleClicked,this,&DSMainWindow::showRelation);
+    connect(rel_dock,&DSRelationControlDockWidget::showAllClicked,this,&DSMainWindow::showAllRelation);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
@@ -105,7 +107,11 @@ void DSMainWindow::execUttProc(std::string utt_proc) {
         delete currentRelation;
         ++i;
     }
+
+    // for relations?
+    emit showAllRelation();
 }
+
 
 void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
     loadText();
@@ -121,6 +127,16 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
             graph_manager->printRelation(QString(t.c_str()), temp, colors.at(i%colors.size()));
         ++i;
     }
+    // for relation
+    emit showRelation();
+}
+
+void DSMainWindow::showRelation() {
+    rel_dock->showSingleClicked();
+}
+
+void DSMainWindow::showAllRelation() {
+    rel_dock->showAllClicked();
 }
 
 void DSMainWindow::resetUtterance() {

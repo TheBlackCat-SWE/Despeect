@@ -8,13 +8,22 @@
 void DSRelListModel::setupModelData() {
     std::vector<std::string> vec = adapter->getRelList();
 
-    for(auto&& str : vec)
-        list << QString::fromStdString(str);
+    if(vec.empty()){
+        list << "empty relation list";
+    }
+    else {
+
+        for(auto&& str : vec)
+            list << QString::fromStdString(str);
+    }
 }
 
 void DSRelListModel::fetchData() {
-    setupModelData();
-    layoutChanged();
+    if(list.isEmpty()){
+        list = QStringList();
+    }
+        setupModelData();
+        layoutChanged();
 }
 
 DSRelListModel::DSRelListModel(QObject* parent, DSAdapter* adapter):
