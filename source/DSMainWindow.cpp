@@ -51,6 +51,7 @@ void DSMainWindow::setupUI() {
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
+    addDockWidget(Qt::BottomDockWidgetArea,rel_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(graph_view);
     setMenuBar(menu_bar);
@@ -133,6 +134,7 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     list_model(new DSListModel(this, adapter)),
     list_view(new QListView(this)),
     flow_dock(new DSFlowControlDockWidget(this, adapter)),
+    rel_dock(new DSRelationControlDockWidget(this,adapter)),
     text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
     graph_manager(new GraphManager()),

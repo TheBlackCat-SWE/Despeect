@@ -43,7 +43,9 @@ set( HEADERS
     header/DSRelation.hpp
     header/DSItem.hpp
     header/DSMainWindow.hpp
+    header/DSRelListModel.hpp
     header/DSFlowControlDockWidget.hpp
+    header/DSRelationControlDockWidget.hpp
     header/DSTreeModel.hpp
     header/DSTreeItem.hpp
     header/DSListModel.hpp
@@ -60,8 +62,10 @@ set( HEADERS
 set( MOC_HEADERS
     header/DSMainWindow.hpp
     header/DSFlowControlDockWidget.hpp
+    header/DSRelationControlDockWidget.hpp
     header/DSTreeModel.hpp
     #header/DSTreeItem.hpp Do not inherit from QObject
+    header/DSRelListModel.hpp
     header/DSListModel.hpp
     header/DSTextDockWidget.hpp
     header/arc.hpp
@@ -78,8 +82,10 @@ set( SOURCES
     source/DSItem.cpp
     source/DSMainWindow.cpp
     source/DSFlowControlDockWidget.cpp
+    source/DSRelationControlDockWidget.cpp
     source/DSTreeModel.cpp
     source/DSTreeItem.cpp
+    source/DSRelListModel.cpp
     source/DSListModel.cpp
     source/DSTextDockWidget.cpp
     source/arc.cpp
