@@ -16,6 +16,7 @@ private:
     QStringList list;
 
     void setupModelData();
+
 public slots:
     //Using this slot should always be the only proper way to call setupModelData
     void fetchData();
