@@ -14,6 +14,7 @@ class DSRelListModel: public QStringListModel {
     Q_OBJECT
 private:
     DSAdapter* adapter;
+    QSet<QString> allItems;
     QSet<QPersistentModelIndex> checkedItems;
 
     //void setupModelData();
@@ -32,7 +33,8 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index,const QVariant &value,int role) override;
     //QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    QStringList getRelationsAsQStringList()const;
+    QStringList getCheckedRelationsAsQStringList()const;
+    QStringList getAllRelationsAsQStringList() const;
 };
 
 

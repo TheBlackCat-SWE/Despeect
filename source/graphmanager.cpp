@@ -11,8 +11,8 @@
  * Type: src
  * Date: 2018-04-23
  * E-mail: graphite.swe@gmail.com
- * 
- * Description: manage graphs and relations to keep the two models coherent 
+ *
+ * Description: manage graphs and relations to keep the two models coherent
  */
 
 // Description: GraphManager constructor 
@@ -69,7 +69,7 @@ bool GraphManager::printRelation(const QString &id, const DSItem *SpeectNode, co
     QGraphicsRectItem* parentRelation=generateRelation(id,Color);
     //if no error in generation of relations
     if(parentRelation!=NULL){
-    //add to graph the relation
+        //add to graph the relation
         Graph->addItem(parentRelation);
         //add to nodes that must be checked the head node
         ToBeChecked.push_back(SpeectNode);
@@ -108,8 +108,8 @@ void GraphManager::clear()
 
 
 /*
- * Description: generates the relation item to use as parent of all nodes and arcs 
- * @param const QString& - Qt string as relation name (see Qt docs for more info) 
+ * Description: generates the relation item to use as parent of all nodes and arcs
+ * @param const QString& - Qt string as relation name (see Qt docs for more info)
  * @param const QColor& - Qt color as relation color (see Qt docs for more info)
  * @return QGraphicsRectItem *
  */
@@ -120,14 +120,14 @@ QGraphicsRectItem *GraphManager::generateRelation(const QString &id, const QColo
         QGraphicsRectItem* t=new QGraphicsRectItem();
         Relations.insert(id,t);
         return t;
-     }
+    }
     return NULL;
 
 }
 
 /*
  * Description: generates the item to be added into the relations model
- * @param const QString& - Qt string as relation name (see Qt docs for more info) 
+ * @param const QString& - Qt string as relation name (see Qt docs for more info)
  * @param const QColor & - Qt color as relation color (see Qt docs for more info)
  * @return QStandardItem *
  */
@@ -171,7 +171,7 @@ void GraphManager::FixHeadPosition(Node &me)
  * 				must be in Printed QVector, this method check the relations of the item and correctly
  *				add to the list of nodes that must be checked the next and the daughter of the item
  * @param QVector<const Item*>& - items vector
- * @param const QString &relation - Qt string as relation name (see Qt docs for more info) 
+ * @param const QString &relation - Qt string as relation name (see Qt docs for more info)
  * @param const QColor &color - Qt color as relation color (see Qt docs for more info)
  * @param QGraphicsItem *parentRelation - Qt graphics item as parent relation (see Qt docs for more info)
  * @return void
@@ -261,20 +261,25 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
     }
 }
 
-void GraphManager::changeRelationVisibilityList(QStringList keys) {
+#include<QDebug>
 
-    QStringList::const_iterator constIt;
-    for(constIt = keys.constBegin();
-        constIt != keys.constEnd();
-        ++constIt) {
-        for(auto it = Relations.find(*constIt);
-            it != Relations.end();
-            ++it) {
-            (*it)->setVisible(!(*it)->isVisible());
+void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList checkedKeys) {
+
+    for(int i = 0; i < allKeys.length();++i){
+        auto it = Relations.find(allKeys.at(i));
+        if(it != Relations.end()) {
+            (*it)->setVisible(false);
         }
     }
 
+    for(int i = 0; i < checkedKeys.length();++i){
+        auto it = Relations.find(checkedKeys.at(i));
+        if(it != Relations.end())
+            (*it)->setVisible(true);
+    }
 }
+
+
 
 
 
@@ -313,8 +318,8 @@ void GraphManager::notifySelection()
 
 /*
  * Description: focuses the node given the relation and the path
- * @param const QString& - Qt string as relation name (see Qt docs for more info) 
- * @param const QString& - Qt string as path (see Qt docs for more info) 
+ * @param const QString& - Qt string as relation name (see Qt docs for more info)
+ * @param const QString& - Qt string as path (see Qt docs for more info)
  * @return void
  */
 void GraphManager::selectItem(const QString &relation, const QString &path)

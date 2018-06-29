@@ -134,10 +134,10 @@ void DSMainWindow::updateAvailableRelations(){
     rel_dock->updateAvailableRelations();
 }
 
-void DSMainWindow::showRelations(QStringList res) {
+void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
     //rel_dock->u
     //rel_dock->showAll();
-    graph_manager->changeRelationVisibilityList(res);
+    graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
 }
 
 
