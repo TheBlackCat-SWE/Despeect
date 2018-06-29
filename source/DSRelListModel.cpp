@@ -73,8 +73,11 @@ Qt::ItemFlags DSRelListModel::flags(const QModelIndex& index) const {
     }
     return defaultFlags;
 }
-/*QVariant DSRelListModel::headerData(int section, Qt::Orientation orientation, int role) const {
 
+QStringList DSRelListModel::getRelationsAsQStringList() const {
+    QStringList keys = QStringList();
+    foreach(QPersistentModelIndex index, checkedItems) {
+        keys << index.data().toString();
+    }
+    return keys;
 }
-
-*/

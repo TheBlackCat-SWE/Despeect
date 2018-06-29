@@ -18,6 +18,9 @@ private:
 
     //void setupModelData();
 
+signals:
+    void shownRelations(QStringList);
+
 public slots:
     //Using this slot should always be the only proper way to call setupModelData
     void fetchData();
@@ -29,6 +32,7 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index,const QVariant &value,int role) override;
     //QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QStringList getRelationsAsQStringList()const;
 };
 
 

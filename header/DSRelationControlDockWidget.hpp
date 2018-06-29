@@ -38,8 +38,12 @@ private:
     void setupUI();
     void doConnections();
 
+signals:
+    void showRelation(QStringList);
+
 public slots:
     void showAll();
+    void updateAvailableRelations();
 
 public:
     DSRelationControlDockWidget(QWidget* parent,DSAdapter* adapter);
