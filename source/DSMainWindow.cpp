@@ -144,6 +144,9 @@ void DSMainWindow::showAllRelation() {
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
     graph_manager->clear();
+
+    // for relation
+    emit showRelation();
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):
