@@ -42,8 +42,8 @@ void DSMainWindow::doConnections() {
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProcList, this, &DSMainWindow::execUttProcList);
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
-    connect(rel_dock,&DSRelationControlDockWidget::showSingleRelation,this,&DSMainWindow::showRelation);
-    connect(rel_dock,&DSRelationControlDockWidget::showAllRelations,this,&DSMainWindow::showAllRelation);
+    connect(rel_dock,&DSRelationControlDockWidget::showAll,this,&DSMainWindow::showRelation);
+    connect(rel_dock,&DSRelationControlDockWidget::showAll,this,&DSMainWindow::showAllRelation);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
@@ -108,8 +108,8 @@ void DSMainWindow::execUttProc(std::string utt_proc) {
         ++i;
     }
 
-    // for relations?
-    emit showAllRelation();
+    // for relation
+    emit showRelation();
 }
 
 
@@ -132,12 +132,14 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
 }
 
 void DSMainWindow::showRelation() {
-    rel_dock->showSingleClicked();
+    //rel_dock->u
+    rel_dock->showAll();
 }
 
 void DSMainWindow::showAllRelation() {
-    rel_dock->showAllClicked();
-}
+    //rel_dock->showAllClicked();
+    rel_dock->showAll();
+}//
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
