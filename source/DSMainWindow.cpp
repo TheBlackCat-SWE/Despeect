@@ -53,7 +53,7 @@ void DSMainWindow::setupUI() {
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
-    addDockWidget(Qt::BottomDockWidgetArea,rel_dock);
+    addDockWidget(Qt::RightDockWidgetArea,rel_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(graph_view);
     setMenuBar(menu_bar);
