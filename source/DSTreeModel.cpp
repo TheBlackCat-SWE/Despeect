@@ -147,11 +147,11 @@ bool DSTreeModel::setData(const QModelIndex& index, const QVariant& value, int r
             while(parent(current_utt_type).isValid());
             //Loop over all the utt_types unticking them cascade style unless it hits
             //the current one
-            QModelIndex i = current_utt_type.siblingAtRow(0);
+            QModelIndex i = current_utt_type.sibling(0,0);
             while(i.isValid()) {
                 if(i != current_utt_type)
                     setData(i, Qt::Unchecked, role);
-                i = i.siblingAtRow(i.row() + 1);
+                i = i.sibling(i.row() + 1,0);
             }
         }
 

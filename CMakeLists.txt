@@ -6,6 +6,24 @@ project(Despeect)
 # Enables C++11 and later
 set(CMAKE_CXX_STANDARD 11)
 
+## install Test
+# place binaries and libraries according to GNU standards
+include(GNUInstallDirs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+include(test-framework/cmake/googletest.cmake)
+fetch_googletest(
+  ${CMAKE_SOURCE_DIR}/test-framework/cmake
+  ${CMAKE_SOURCE_DIR}/test-framework/build
+)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage")
+
 # --- CMake instructions required from Speect ---
 
 # Sets ${spct_DIR} variable to the Speect engine path
@@ -104,3 +122,7 @@ target_include_directories( Despeect PUBLIC
     ${spct_DIR}
     #INCLUDE_DIRECTORIES #Useless ??
 )
+
+## aggiunta Test
+enable_testing()
+add_subdirectory(Test)
