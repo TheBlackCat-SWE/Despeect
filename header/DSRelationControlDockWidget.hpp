@@ -39,7 +39,7 @@ private:
     void doConnections();
 
 signals:
-    void showRelation(QStringList);
+    void showRelation(QStringList,QStringList);
 
 public slots:
     void showAll();

@@ -22,6 +22,7 @@ void DSRelListModel::fetchData() {
             it != vec.end();
             ++it) {
             res << QString::fromStdString(*it);
+            allItems.insert(QString::fromStdString(*it));
         }
     }
     setStringList(res);
@@ -60,6 +61,10 @@ bool DSRelListModel::setData(const QModelIndex& index,const QVariant &value,int 
     else
         checkedItems.remove(index);
 
+    // tentative fix to weird behavior show relations
+      //  allItems.insert(index);
+    //
+
     emit dataChanged(index, index);
     return true;
 }
@@ -74,10 +79,23 @@ Qt::ItemFlags DSRelListModel::flags(const QModelIndex& index) const {
     return defaultFlags;
 }
 
-QStringList DSRelListModel::getRelationsAsQStringList() const {
-    QStringList keys = QStringList();
+#include<QString>
+#include<QDebug>
+
+
+QStringList DSRelListModel::getCheckedRelationsAsQStringList() const {
+    QStringList res = QStringList();
+
     foreach(QPersistentModelIndex index, checkedItems) {
-        keys << index.data().toString();
+        res << index.data().toString();
     }
-    return keys;
+    return res;
+}
+
+QStringList DSRelListModel::getAllRelationsAsQStringList() const {
+    QStringList res = QStringList();
+    foreach(QString index, allItems) {
+        res << index;
+    }
+    return res;
 }

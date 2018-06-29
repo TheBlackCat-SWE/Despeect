@@ -136,7 +136,7 @@ public slots:
      * /
     */
 
-    void changeRelationVisibilityList(QStringList);
+    void changeRelationVisibilityList(QStringList,QStringList);
 
     /*
      * Description: changes the visibility of the relations in the graph

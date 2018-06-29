@@ -61,12 +61,11 @@ void DSRelationControlDockWidget::doConnections() {
 #include<QDebug>
 
 void DSRelationControlDockWidget::showAll() {
-   // rel_list_model->fetchData();
 
-    qDebug() << "in DSRelationControlDockWidget::showAll()";
+    QStringList checkedkeys = rel_list_model->getCheckedRelationsAsQStringList();
+    QStringList allKeys = rel_list_model->getAllRelationsAsQStringList();
 
-    QStringList keys = rel_list_model->getRelationsAsQStringList();
-    emit showRelation(keys);
+    emit showRelation(allKeys,checkedkeys);
 }
 
 void DSRelationControlDockWidget::updateAvailableRelations() {
