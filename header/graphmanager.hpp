@@ -131,6 +131,13 @@ private:
 
 public slots:
     
+    /* show all checked relations
+     *
+     * /
+    */
+
+    void changeRelationVisibilityList(QStringList);
+
     /*
      * Description: changes the visibility of the relations in the graph
      * @param QStandardItem * - Qt standard item as relation reference (see Qt docs for more info)

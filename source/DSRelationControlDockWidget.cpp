@@ -14,8 +14,9 @@ void DSRelationControlDockWidget::setupUI() {
 
     // start widget definition
 
-    viewBox = new QGroupBox(tr("Relations List"));
+    viewBox = new QGroupBox;
     buttonBox = new QDialogButtonBox;
+
 
     showAllButton = new QPushButton(tr("Show All"));
 
@@ -43,16 +44,32 @@ void DSRelationControlDockWidget::setupUI() {
 
     // end create Layout
 
+    // start connecting all button with slots
+
+    doConnections();
+
+    // end connecting all button with slots
 }
 
 
 void DSRelationControlDockWidget::doConnections() {
 
-    QObject::connect(showAllButton,SIGNAL(clicked),this,SLOT(showAll()));
+    QObject::connect(showAllButton,SIGNAL(clicked()),this,SLOT(showAll()));
+
 }
 
+#include<QDebug>
 
 void DSRelationControlDockWidget::showAll() {
+   // rel_list_model->fetchData();
+
+    qDebug() << "in DSRelationControlDockWidget::showAll()";
+
+    QStringList keys = rel_list_model->getRelationsAsQStringList();
+    emit showRelation(keys);
+}
+
+void DSRelationControlDockWidget::updateAvailableRelations() {
     rel_list_model->fetchData();
 }
 

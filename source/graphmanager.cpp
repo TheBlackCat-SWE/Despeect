@@ -261,6 +261,23 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
     }
 }
 
+void GraphManager::changeRelationVisibilityList(QStringList keys) {
+
+    QStringList::const_iterator constIt;
+    for(constIt = keys.constBegin();
+        constIt != keys.constEnd();
+        ++constIt) {
+        for(auto it = Relations.find(*constIt);
+            it != Relations.end();
+            ++it) {
+            (*it)->setVisible(!(*it)->isVisible());
+        }
+    }
+
+}
+
+
+
 /*
  * Description: changes the visibility of the relations in the graph
  * @param QStandardItem * - Qt standard item as relation reference (see Qt docs for more info)

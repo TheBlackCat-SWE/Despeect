@@ -42,8 +42,7 @@ void DSMainWindow::doConnections() {
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProcList, this, &DSMainWindow::execUttProcList);
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
-    connect(rel_dock,&DSRelationControlDockWidget::showAll,this,&DSMainWindow::showRelation);
-    connect(rel_dock,&DSRelationControlDockWidget::showAll,this,&DSMainWindow::showAllRelation);
+    connect(rel_dock,&DSRelationControlDockWidget::showRelation,this,&DSMainWindow::showRelations);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
@@ -109,7 +108,7 @@ void DSMainWindow::execUttProc(std::string utt_proc) {
     }
 
     // for relation
-    emit showRelation();
+    emit updateAvailableRelations();
 }
 
 
@@ -128,25 +127,26 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
         ++i;
     }
     // for relation
-    emit showRelation();
+    emit updateAvailableRelations();
 }
 
-void DSMainWindow::showRelation() {
+void DSMainWindow::updateAvailableRelations(){
+    rel_dock->updateAvailableRelations();
+}
+
+void DSMainWindow::showRelations(QStringList res) {
     //rel_dock->u
-    rel_dock->showAll();
+    //rel_dock->showAll();
+    graph_manager->changeRelationVisibilityList(res);
 }
 
-void DSMainWindow::showAllRelation() {
-    //rel_dock->showAllClicked();
-    rel_dock->showAll();
-}//
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
     graph_manager->clear();
 
     // for relation
-    emit showRelation();
+    emit updateAvailableRelations();
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):
