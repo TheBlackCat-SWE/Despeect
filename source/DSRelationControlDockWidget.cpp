@@ -3,51 +3,63 @@
 
 void DSRelationControlDockWidget::setupUI() {
 
-    doConnections();
-
+    //start view model definition
     list_view->setModel(rel_list_model);
-    v_layout->addWidget(list_view);
-    v_layout->addLayout(h_layout);
-    h_layout->addWidget(show_all_button);
+
+    QStringList strList;
+    strList << "empty Relations List";
+    //rel_list_model->setStringList(strList);
+
+    // end view model definition
+
+    // start widget definition
+
+    viewBox = new QGroupBox(tr("Relations List"));
+    buttonBox = new QDialogButtonBox;
+
+    showAllButton = new QPushButton(tr("Show All"));
+
+    buttonBox->addButton(showAllButton,QDialogButtonBox::ActionRole);
+
+    // end widget definition
+
+    // start create Layout
+
+    QVBoxLayout* viewLayout = new QVBoxLayout;
+    viewLayout->addWidget(list_view);
+    viewBox->setLayout(viewLayout);
+
+    QHBoxLayout* horizontalLayout = new QHBoxLayout;
+    horizontalLayout->addWidget(buttonBox);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(viewBox);
+    mainLayout->addLayout(horizontalLayout);
 
     QWidget* internalWidget = new QWidget();
-    internalWidget->setLayout(v_layout);
+    internalWidget->setLayout(mainLayout);
     setWidget(internalWidget);
-    setWindowTitle("Relations");
+    setWindowTitle("Relation List");
+
+    // end create Layout
 
 }
 
-void DSRelationControlDockWidget::fillQueue() {
-
-
-}
 
 void DSRelationControlDockWidget::doConnections() {
 
-    connect(show_all_button,&QPushButton::clicked,this, &DSRelationControlDockWidget::showAllClicked);
-
+    QObject::connect(showAllButton,SIGNAL(clicked),this,SLOT(showAll()));
 }
 
-void DSRelationControlDockWidget::showAllClicked() {
-fetchData();
-}
 
-void DSRelationControlDockWidget::showSingleClicked() {
-fetchData();
-}
-
-void DSRelationControlDockWidget::fetchData() {
+void DSRelationControlDockWidget::showAll() {
     rel_list_model->fetchData();
 }
 
-
-DSRelationControlDockWidget::DSRelationControlDockWidget(QWidget* parent,DSAdapter* adapter) :
-    QDockWidget (parent),
-    rel_list_model(new DSRelListModel(this,adapter)),
-    list_view(new QListView(this)),
-    v_layout(new QVBoxLayout()),
-    h_layout(new QHBoxLayout()),
-    show_all_button(new QPushButton("Show All"))
+DSRelationControlDockWidget::DSRelationControlDockWidget(QWidget* parent,DSAdapter* adapter)
+    :QDockWidget (parent)
 {
+    list_view = new QListView;
+    rel_list_model = new DSRelListModel(this,adapter);
     setupUI();
 }

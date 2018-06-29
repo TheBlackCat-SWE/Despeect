@@ -11,6 +11,13 @@
 #include <QString>
 #include <QWidget>
 
+#include<QDialogButtonBox>
+#include<QButtonGroup>
+#include<QGroupBox>
+#include<QCheckBox>
+
+#include<QLabel>
+
 #include "DSRelListModel.hpp"
 
 class DSAdapter;
@@ -22,25 +29,18 @@ class DSRelationControlDockWidget : public QDockWidget
 private:
     DSRelListModel* rel_list_model;
     QListView* list_view;
-    QVBoxLayout* v_layout;
-    QHBoxLayout* h_layout;
-    QPushButton* show_all_button;
-    //QPushButton* run_step_button;
-    //QPushButton* reset_button;
-    //QQueue<QString> proc_queue;
+
+    QDialogButtonBox* buttonBox;
+    QGroupBox* viewBox;
+
+    QPushButton *showAllButton;
 
     void setupUI();
-    void fillQueue();
     void doConnections();
 
-signals:
-    void showSingleRelation();
-    void showAllRelations();
-
 public slots:
-    void showAllClicked();
-    void showSingleClicked();
-    void fetchData();
+    void showAll();
+
 public:
     DSRelationControlDockWidget(QWidget* parent,DSAdapter* adapter);
 };

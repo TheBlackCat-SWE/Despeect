@@ -5,55 +5,76 @@
 #include <QString>
 
 
-void DSRelListModel::setupModelData() {
-    std::vector<std::string> vec = adapter->getRelList();
+//void DSRelListModel::setupModelData() {
 
-    if(vec.empty()){
-        list << "empty relation list";
-    }
-    else {
+//}
 
-        for(auto&& str : vec)
-            list << QString::fromStdString(str);
-    }
-}
 
 void DSRelListModel::fetchData() {
-    if(!list.isEmpty()){
-        list = QStringList();
+    std::vector<std::string> vec = adapter->getRelList();
+
+    QStringList res = QStringList();
+    if(vec.empty()) {
+        //res << "Empty relations list";
     }
-        setupModelData();
-        layoutChanged();
+    else {
+        for(std::vector<std::string>::iterator it = vec.begin();
+            it != vec.end();
+            ++it) {
+            res << QString::fromStdString(*it);
+        }
+    }
+    setStringList(res);
 }
 
 DSRelListModel::DSRelListModel(QObject* parent, DSAdapter* adapter):
-    QAbstractListModel(parent),
+    QStringListModel(parent),
     adapter(adapter)
 {}
 
-int DSRelListModel::rowCount(const QModelIndex& parent) const {
-    return list.size();
-}
 
 QVariant DSRelListModel::data(const QModelIndex& index, int role) const {
-    if(!index.isValid())
+
+    if (!index.isValid())
         return QVariant();
 
-    if(index.row() >= list.size())
-        return QVariant();
+    if(role == Qt::CheckStateRole)
+        return checkedItems.contains(index) ?
+                    Qt::Checked : Qt::Unchecked;
 
-    if(role == Qt::DisplayRole)
-        return list.at(index.row());
-    else
-        return QVariant();
+    else if(role == Qt::BackgroundColorRole)
+        return checkedItems.contains(index) ?
+                    QColor("#ffffb2") : QColor("#ffffff");
+
+    return QStringListModel::data(index, role);
 }
 
-QVariant DSRelListModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if(role != Qt::DisplayRole)
-        return QVariant();
 
-    if(orientation == Qt::Horizontal)
-        return QString("Key");
+bool DSRelListModel::setData(const QModelIndex& index,const QVariant &value,int role) {
+
+    if(!index.isValid() || role != Qt::CheckStateRole)
+        return false;
+
+    if(value == Qt::Checked)
+        checkedItems.insert(index);
     else
-        return QVariant();
+        checkedItems.remove(index);
+
+    emit dataChanged(index, index);
+    return true;
 }
+
+
+Qt::ItemFlags DSRelListModel::flags(const QModelIndex& index) const {
+
+    Qt::ItemFlags defaultFlags = QStringListModel::flags(index);
+    if (index.isValid()){
+        return defaultFlags | Qt::ItemIsUserCheckable;
+    }
+    return defaultFlags;
+}
+/*QVariant DSRelListModel::headerData(int section, Qt::Orientation orientation, int role) const {
+
+}
+
+*/
