@@ -79,11 +79,11 @@ void Arc::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
     head.clear();
     QPointF end=FixEnd();
     if(type){
-    head<<end<<arrowPoint1<<end+directionVector.toPointF()*arrowWidth/2<<arrowPoint2<<end;
+    head<<end<<arrowPoint1<<end+directionVector.toPointF()*arrowWidth/2<<arrowPoint2;
     }
     else
     {
-        head<<end<<arrowPoint1<<arrowPoint2<<end;
+        head<<end<<arrowPoint1<<arrowPoint2;
     }
     //draw the polygon and the line
     painter->drawPolygon(head);
