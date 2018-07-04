@@ -1,40 +1,19 @@
 #include "processormanager.hpp"
 
-/*
- * File: processormanager.cpp
- * Type: src
- * Date: 2018-04-23
- * E-mail: graphite.swe@gmail.com
- * 
- * Description: handles the model that allows the printing of the processors
- */
+ProcessorManager::ProcessorManager():indexProcessor(-1),ProcessorModel(new QStandardItemModel()) {}
 
-// Description: ProcessorManager constructor
-ProcessorManager::ProcessorManager():indexProcessor(-1),ProcessorModel(new QStandardItemModel())
-{}
-
-// Description: ProcessorManager destructor
-ProcessorManager::~ProcessorManager()
-{
+ProcessorManager::~ProcessorManager() {
     clear();
     delete ProcessorModel;
 }
 
-/*
- * Description: links the view to the model
- * @param QListView* v - Qt list view (see Qt docs for more info)
- * @return void
- */
-void ProcessorManager::linkProcessorModel(QListView* v)
-{
+
+void ProcessorManager::linkProcessorModel(QListView* v) {
     v->setModel(ProcessorModel);
 }
 
-/*
- * Description: sets all the items to the normal font and the last executed processor to none
- * @return void
- */
-void ProcessorManager::clearLayoutProcessor(){
+
+void ProcessorManager::clearLayoutProcessor() {
     //create a new standard font
     QFont font;
     font.setBold(false);
@@ -49,11 +28,8 @@ void ProcessorManager::clearLayoutProcessor(){
     indexProcessor=-1;
 }
 
-/*
- * Description: locks changes in the model, used while executing
- * @return void
- */
-void ProcessorManager::lockUpdateItem(){
+
+void ProcessorManager::lockUpdateItem() {
     for(int i=0;i<ProcessorModel->rowCount();++i)
     {
         ProcessorModel->item(i)->setCheckable(false);
@@ -61,11 +37,8 @@ void ProcessorManager::lockUpdateItem(){
     }
 }
 
-/*
- * Description: unlocks changes in the model
- * @return void
- */
-void ProcessorManager::unlockUpdateItem(){
+
+void ProcessorManager::unlockUpdateItem() {
     for(int i=0;i<ProcessorModel->rowCount();++i)
     {
         ProcessorModel->item(i)->setCheckable(true);
@@ -73,11 +46,8 @@ void ProcessorManager::unlockUpdateItem(){
     }
 }
 
-/*
- * Description: changes the font color to the next processor
- * @return void
- */
-void ProcessorManager::evidenceNextProcessor(){
+
+void ProcessorManager::evidenceNextProcessor() {
     //create a new font
     QFont font;
     //if there is a processor in the model and if the selected processor
@@ -107,11 +77,8 @@ void ProcessorManager::evidenceNextProcessor(){
     }
 }
 
-/*
- * Description: changes the font color of all the processors, if index is valid set the item to bold
- * @return void
- */
-void ProcessorManager::evidenceAllProcessor(){
+
+void ProcessorManager::evidenceAllProcessor() {
     QFont font;
     font.setBold(false);
     //if there are processors in the model
@@ -133,11 +100,8 @@ void ProcessorManager::evidenceAllProcessor(){
     }
 }
 
-/*
- * Description: returns the list of the selected processor
- * @return std::list<std::string>
- */
-std::list<std::string> ProcessorManager::getProcessorList(){
+
+std::list<std::string> ProcessorManager::getProcessorList() {
     std::list<std::string> list;
     //if the processor is checked add it to the list of processor that have to be runned
     for(int i=0;i<ProcessorModel->rowCount();++i){
@@ -148,20 +112,13 @@ std::list<std::string> ProcessorManager::getProcessorList(){
     return list;
 }
 
-/*
- * Description: returns whether the index of the processor is valid
- * @return bool
- */
-bool ProcessorManager::isLayoutClean(){
+
+bool ProcessorManager::isLayoutClean() {
     return indexProcessor==-1;
 }
 
-/*
- * Description: adds a processor to the model
- * @param std::string name - processor name
- * @return void
- */
-void ProcessorManager::addProcessor(std::string name){
+
+void ProcessorManager::addProcessor(std::string name) {
     //set the mane to the processor name
     QStandardItem* item = new QStandardItem(name.c_str());
     //set that is checkable to allow selection
@@ -174,13 +131,8 @@ void ProcessorManager::addProcessor(std::string name){
     ProcessorModel->appendRow(item);
 }
 
-/*
- * Description: clears the model
- * @return void
- */
-void ProcessorManager::clear()
-{
 
+void ProcessorManager::clear() {
     //for each item in the model delete it
     for(int i=0;i<ProcessorModel->rowCount();++i)
     {

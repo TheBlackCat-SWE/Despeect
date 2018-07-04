@@ -10,163 +10,128 @@
 class DSItem;
 class Node;
 
-/*
- * File: graphmanager.h
- * Type: header
- * Date: 2018-04-23
- * E-mail: graphite.swe@gmail.com
- * 
- * Description: manage graphs and relations to keep the two models coherent 
+/**
+ * @brief manage graphs and relations to keep the two models coherent
  */
  
-class GraphManager : public QObject
-{
-    //Macro used to enable Qt signals and slots
+class GraphManager : public QObject {
     Q_OBJECT
     
 private:
-    //Field: radius of all nodes in the manager
     static const int Radius=15;
-    
-    //Field: model of the relation printed on the graph
+    //model of the relation printed on the graph
     QStandardItemModel* RelationsModel;
-    
-    //Field: list of all the nodes printed on the graph
+    //list of all the nodes printed on the graph
     QMap<QString, Node*> Printed;
-    
-    //Field: map of all the relations and the items that represent the relations on the graph (used to hide a selected relation)
+    //map of all the relations and the items that represent the relations on the graph
     QMap<QString,QGraphicsRectItem*> Relations;
     
 public:
-
-    //Field: model of the graph
     QGraphicsScene* Graph;
-
-	// Description: GraphManager constructor 
     GraphManager();
-    
-	// Description: GraphManager destructor
     ~GraphManager();
-    
-    /*
-     * Description: GraphManager copy constructor, made private to avoid copy costruction of the manager
-     * @param const GraphManager& - GraphManager to be copied
-     */
     GraphManager(const GraphManager&)=delete;
 
-    /*
-     * Description: returns the graph model to be linked with the view
-     * @param QGraphicsView* view - Qt graphic view as view component (see Qt docs for more info)
+    /**
+     * @brief returns the graph model to be linked with the view
+     * @param  view  Qt graphic view as view component
      * @return void
      */
     void linkGraphModel(QGraphicsView* view);
 
-    /*
-     * Description: returns the relation model to be linked with the view
-     * @param QListView* - Qt list view (see Qt docs for more info)
+    /**
+     * @brief returns the relation model to be linked with the view
+     * @param view Qt list view
      * @return void
      */
     void linkRelationModel(QListView*);
 
-    /*
-     * Description: prints the relations which start from the given item, with the chosen name and the chosen color
-     * @param const QString& - Qt string as relation name (see Qt docs for more info)
-     * @param const Item* - initial item
-     * @param const QColor& - Qt color as chosen color (see Qt docs for more info)
+    /**
+     * @brief prints the relations which start from the given item, with the chosen name and the chosen color
+     * @param id Qt string as relation name
+     * @param SpeectNode initial item
+     * @param Color Qt color as chosen color
      * @return bool
      */
-    bool printRelation(const QString&, const DSItem*, const QColor&);
-
-    /*
-     * Description: clears both models
-     * @return void
-     */
+    bool printRelation(const QString& id, const DSItem* SpeectNode, const QColor& Color);
     void clear();
     
 private:
-    
-    // Help methods to print relation 
-     
-    /*
-     * Description: generates the relation item to use as parent of all nodes and arcs 
-     * @param const QString& - Qt string as relation name (see Qt docs for more info) 
-     * @param const QColor& - Qt color as relation color (see Qt docs for more info)
+    /**
+     * @brief generates the relation item to use as parent of all nodes and arcs
+     * @param id Qt string as relation name
+     * @param Color Qt color as relation color
      * @return QGraphicsRectItem *
      */
-    QGraphicsRectItem *generateRelation(const QString&,const QColor&);
+    QGraphicsRectItem *generateRelation(const QString& id,const QColor& color);
     
-    /*
-     * Description: generates the item to be added into the relations model
+    /**
+     * @brief generates the item to be added into the relations model
      * @param const QString& - Qt string as relation name (see Qt docs for more info) 
      * @param const QColor & - Qt color as relation color (see Qt docs for more info)
      * @return QStandardItem *
      */
-    QStandardItem *generateItem(const QString&, const QColor &);
+    QStandardItem *generateItem(const QString& id, const QColor & color);
     
-    /*
-     * Description: positions the node in the first column where it doesn't collide
-     * @param Node& - node reference
+    /**
+     * @brief positions the node in the first column where it doesn't collide
+     * @param me node reference
      * @return void
      */
-    void PositionNode(Node&);
+    void PositionNode(Node& me);
     
-    /*
-     * Description: positions the node in the first row where it doesn't collide
-     * @param Node& - node reference
+    /**
+     * @brief positions the node in the first row where it doesn't collide
+     * @param me node reference
      * @return void
      */
-    void FixHeadPosition(Node&);
+    void FixHeadPosition(Node& me);
     
-    /*
-     * Description: check the relation of the first item in the list, the node that graphically represents the item
+    /**
+     * @brief check the relation of the first item in the list, the node that graphically represents the item
      * 				must be in Printed QVector, this method check the relations of the item and correctly
      *				add to the list of nodes that must be checked the next and the daughter of the item
-     * @param QVector<const Item*>& - items vector
-     * @param const QString &relation - Qt string as relation name (see Qt docs for more info) 
-     * @param const QColor &color - Qt color as relation color (see Qt docs for more info)
-     * @param QGraphicsItem *parentRelation - Qt graphics item as parent relation (see Qt docs for more info)
+     * @param tbc items vector
+     * @param relation Qt string as relation name
+     * @param color Qt color as relation color
+     * @param parentRelation Qt graphics item as parent relation (see Qt docs for more info)
      * @return void
      */
-    void checkRelations(QVector<const DSItem*>&, const QString &relation, const QColor &color, QGraphicsItem *parentRelation);
+    void checkRelations(QVector<const DSItem*>& tbc, const QString &relation, const QColor &color, QGraphicsItem *parentRelation);
 
 public slots:
     
-    /*
-     * Description: changes the visibility of the relations in the graph
-     * @param QStandardItem * - Qt standard item as relation reference (see Qt docs for more info)
+    /**
+     * @brief changes the visibility of the relations in the graph
+     * @param key Qt standard item as relation reference
      * @return void
      */
-    void changeRelationVisibility(QStandardItem *);
+    void changeRelationVisibility(QStandardItem * key);
     
-    /*
-     * Description: notifies the selection/deselection of a item
+    /**
+     * @brief notifies the selection/deselection of a item
      * @return void
      */
     void notifySelection();
     
-    /*
-     * Description: focuses the node given the relation and the path
-     * @param const QString& - Qt string as relation name (see Qt docs for more info) 
-     * @param const QString& - Qt string as path (see Qt docs for more info) 
+    /**
+     * @brief focuses the node given the relation and the path
+     * @param relation Qt string as relation name
+     * @param path Qt string as path
      * @return void
      */
-    void selectItem(const QString&,const QString&);
+    void selectItem(const QString& relation,const QString& path);
     
 signals:
     
-    /*
-     * Description: signal launched when there is only one item focused and it's a node
+    /**
+     * @brief signal launched when there is only one item focused and it's a node
      * @param const QString& - Qt string as relation name (see Qt docs for more info) 
      * @param const QString& - Qt string as relation ID (see Qt docs for more info) 
      * @param bool - focus/unfocus
      * @return void
      */
 	void focusSignal(const QString&, const QString&, bool);
-	
-    /*
-     * Description: clears the map and the UI
-     * @return void
-     */
 	void cleardetails();
 };
 
