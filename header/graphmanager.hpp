@@ -100,7 +100,9 @@ private:
     void checkRelations(QVector<const DSItem*>& tbc, const QString &relation, const QColor &color, QGraphicsItem *parentRelation);
 
 public slots:
-    
+
+    void changeRelationVisibilityList(QStringList,QStringList);
+
     /**
      * @brief changes the visibility of the relations in the graph
      * @param key Qt standard item as relation reference

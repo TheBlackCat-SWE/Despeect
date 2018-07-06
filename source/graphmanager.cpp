@@ -38,7 +38,7 @@ bool GraphManager::printRelation(const QString &id, const DSItem *SpeectNode, co
     QGraphicsRectItem* parentRelation=generateRelation(id,Color);
     //if no error in generation of relations
     if(parentRelation!=NULL){
-    //add to graph the relation
+        //add to graph the relation
         Graph->addItem(parentRelation);
         //add to nodes that must be checked the head node
         ToBeChecked.push_back(SpeectNode);
@@ -71,19 +71,17 @@ void GraphManager::clear() {
     RelationsModel->clear();
 }
 
-
-
 QGraphicsRectItem *GraphManager::generateRelation(const QString &id, const QColor &color) {
+
     if(!Relations.contains(id)) {
         RelationsModel->appendRow(generateItem(id,color));
         QGraphicsRectItem* t=new QGraphicsRectItem();
         Relations.insert(id,t);
         return t;
-     }
+    }
     return NULL;
 
 }
-
 
 QStandardItem *GraphManager::generateItem(const QString &id,const QColor&color) {
     QStandardItem* item=new QStandardItem(id);
@@ -108,7 +106,6 @@ void GraphManager::FixHeadPosition(Node &me) {
         me.setY(me.y()+(4*Radius));
     }
 }
-
 
 void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& relation, const QColor& color, QGraphicsItem *parentRelation) {
     //take first item
@@ -182,7 +179,36 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
     }
 }
 
+void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList checkedKeys) {
 
+    // start with clean state: hide all the Relations
+
+    for(int i = 0; i < allKeys.length();++i){
+        auto it = Relations.find(allKeys.at(i));
+        if(it != Relations.end()) {
+            (*it)->setVisible(false);
+        }
+    }
+
+    // show only checked relations
+    // unchecked ones remain hidden
+
+    for(int i = 0; i < checkedKeys.length();++i){
+        auto it = Relations.find(checkedKeys.at(i));
+        if(it != Relations.end())
+            (*it)->setVisible(true);
+    }
+}
+
+
+
+
+
+/*
+ * Description: changes the visibility of the relations in the graph
+ * @param QStandardItem * - Qt standard item as relation reference (see Qt docs for more info)
+ * @return void
+ */
 void GraphManager::changeRelationVisibility(QStandardItem *key) {
     //find the item that represent the relation in the graph model and hide it
     auto it=Relations.find(key->text());
