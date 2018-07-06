@@ -42,6 +42,7 @@ void DSMainWindow::doConnections() {
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProcList, this, &DSMainWindow::execUttProcList);
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
+    connect(rel_dock,&DSRelationControlDockWidget::showRelation,this,&DSMainWindow::showRelations);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
 
@@ -51,6 +52,7 @@ void DSMainWindow::setupUI() {
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
+    addDockWidget(Qt::RightDockWidgetArea,rel_dock);
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(graph_view);
     setMenuBar(menu_bar);
@@ -104,7 +106,11 @@ void DSMainWindow::execUttProc(std::string utt_proc) {
         delete currentRelation;
         ++i;
     }
+
+    // for relation
+    emit updateAvailableRelations();
 }
+
 
 void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
     loadText();
@@ -120,11 +126,27 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
             graph_manager->printRelation(QString(t.c_str()), temp, colors.at(i%colors.size()));
         ++i;
     }
+    // for relation
+    emit updateAvailableRelations();
 }
+
+void DSMainWindow::updateAvailableRelations(){
+    rel_dock->updateAvailableRelations();
+}
+
+void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
+    //rel_dock->u
+    //rel_dock->showAll();
+    graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
+}
+
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
     graph_manager->clear();
+
+    // for relation
+    emit updateAvailableRelations();
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):
@@ -133,6 +155,7 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     list_model(new DSListModel(this, adapter)),
     list_view(new QListView(this)),
     flow_dock(new DSFlowControlDockWidget(this, adapter)),
+    rel_dock(new DSRelationControlDockWidget(this,adapter)),
     text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
     graph_manager(new GraphManager()),
