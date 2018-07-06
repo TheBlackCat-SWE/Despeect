@@ -40,16 +40,9 @@ before_install:
   - sudo apt-get install qt5-default qttools5-dev-tools
 
   - chmod +x SpeectLib/install.sh
+  - ./SpeectLib/install.sh
 
 install:
   - sudo apt-get install -qq g++-5
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90
   - sudo apt-get install libcppunit-dev
-
-
-
-after_success:
-  - cd ${TRAVIS_BUILD_DIR}
-  - ./get_code_cov.sh
-  - bash <(curl -s https://codecov.io/bash)
-
