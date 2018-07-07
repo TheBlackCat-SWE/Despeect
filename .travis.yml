@@ -42,5 +42,5 @@ before_install:
 
 install:
   - sudo apt-get install libcppunit-dev
-  - cmake --build . --target CMakeDemo --config Debug
+  - cmake .
   - make
