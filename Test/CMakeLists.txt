@@ -9,6 +9,10 @@ add_executable(
     simple_test.cpp
     ../header/DSAdapter.hpp
     ../source/DSAdapter.cpp
+    ../header/DSRelation.hpp
+    ../source/DSRelation.cpp
+    ../header/DSItem.hpp
+    ../source/DSItem.cpp
     )
 
 target_link_libraries(
