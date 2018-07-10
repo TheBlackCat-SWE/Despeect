@@ -6,7 +6,7 @@ find_library(despeect libspct.so HINTS ${spct_DIR}/../../../lib)
 
 add_executable(
     unit_tests
-    simple_test.cpp
+    unit_test.cpp
     ../header/DSAdapter.hpp
     ../source/DSAdapter.cpp
     ../header/DSRelation.hpp
