@@ -18,7 +18,7 @@ TEST(DSAdapter, FailedVoiceLoad) {
 
 TEST(DSAdapter, CorrectVoiceLoad) {
     DSAdapter* b=DSAdapter::createAdapter();
-    string voice_path("/home/davide/Desktop/grwegremgl/Despeect/SpeectLib/voices/cmu_arctic_slt/voice.json");
+    string voice_path("../../Despeect/SpeectLib/voices/cmu_arctic_slt/voice.json");
     b->loadVoice(voice_path);
     b->loadText("Sono un test");
     EXPECT_EQ(b->execUttType("text"),1);
@@ -27,7 +27,7 @@ TEST(DSAdapter, CorrectVoiceLoad) {
 
 TEST(DSAdapter, CorrectRelationName) {
     DSAdapter* b=DSAdapter::createAdapter();
-    string voice_path("/home/davide/Desktop/grwegremgl/Despeect/SpeectLib/voices/cmu_arctic_slt/voice.json");
+    string voice_path("../../Despeect/SpeectLib/voices/cmu_arctic_slt/voice.json");
     b->loadVoice(voice_path);
     b->loadText("Sono un test");
     b->execUttType("text");
