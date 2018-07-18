@@ -5,8 +5,29 @@ include_directories(${SPCT_INCLUDE_DIRS})
 find_library(despeect libspct.so HINTS ${spct_DIR}/../../../lib)
 
 add_executable(
-    unit_tests
-    unit_test.cpp
+    voice_load
+    voice_load.cpp
+    ../header/DSAdapter.hpp
+    ../source/DSAdapter.cpp
+    )
+
+target_link_libraries(
+    voice_load
+    ${Qt5Widgets_LIBRARIES}
+    gtest_main
+    ${despeect}
+    )
+
+add_test(
+  NAME
+    voice_load
+  COMMAND
+    voice_load
+)
+
+add_executable(
+    relation_name
+    relation_name.cpp
     ../header/DSAdapter.hpp
     ../source/DSAdapter.cpp
     ../header/DSRelation.hpp
@@ -16,7 +37,7 @@ add_executable(
     )
 
 target_link_libraries(
-    unit_tests
+    relation_name
     ${Qt5Widgets_LIBRARIES}
     gtest_main
     ${despeect}
@@ -24,7 +45,28 @@ target_link_libraries(
 
 add_test(
   NAME
-    unit
+    relation_name
   COMMAND
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/unit_tests
+    relation_name
+)
+
+add_executable(
+    text_load
+    text_load.cpp
+    ../header/DSAdapter.hpp
+    ../source/DSAdapter.cpp
+    )
+
+target_link_libraries(
+    text_load
+    ${Qt5Widgets_LIBRARIES}
+    gtest_main
+    ${despeect}
+    )
+
+add_test(
+  NAME
+    text_load
+  COMMAND
+    text_load
 )
