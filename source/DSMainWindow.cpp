@@ -16,7 +16,12 @@
 #include <QTextStream>
 #include <string>
 #include <QDebug>
+#include <iostream>
 
+void DSMainWindow::setupLog(){
+    logFile.remove();
+    stderr=freopen("log.txt","a",stderr);
+}
 
 void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
@@ -45,7 +50,16 @@ void DSMainWindow::doConnections() {
     connect(rel_dock,&DSRelationControlDockWidget::showRelation,this,&DSMainWindow::showRelations);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 }
-
+/*
+void DSMainWindow::setupSB(){
+    std::stringstream buff;
+    std::streambuf * old = std::cerr.rdbuf(buff.rdbuf());
+    std::cerr<<"test";
+    std::string text = buff.str();
+    QString Qtext=QString::fromStdString(text);
+    status_bar->showMessage(Qtext);
+}
+*/
 void DSMainWindow::setupUI() {
     list_view->setModel(list_model);
     list_dock->setWidget(list_view);
@@ -58,16 +72,15 @@ void DSMainWindow::setupUI() {
     setMenuBar(menu_bar);
     //tool_bar->setMovable(false);
     //addToolBar(Qt::TopToolBarArea, tool_bar);
-    //status_bar->setSizeGripEnabled(false);
+    status_bar->setSizeGripEnabled(true);
     //status_bar->setStyleSheet("color: red");
-    //setStatusBar(status_bar);
-
+    setStatusBar(status_bar);
     graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
     createActions();
     createMenus();
     doConnections();
 }
+
 
 void DSMainWindow::loadVoice() {
     voice_path = QFileDialog::getOpenFileName(this, "Oper Configuration File",
@@ -75,7 +88,8 @@ void DSMainWindow::loadVoice() {
     if(!voice_path.isEmpty()) {
         adapter->loadVoice(voice_path.toStdString());
         emit fetchData();
-    }
+        }
+
 }
 
 void DSMainWindow::showVoicePath() {
@@ -106,7 +120,13 @@ void DSMainWindow::execUttProc(std::string utt_proc) {
         delete currentRelation;
         ++i;
     }
-
+/*
+    std::stringstream buff;
+    std::streambuf * old = std::cerr.rdbuf(buff.rdbuf());
+    std::cerr<<s_error_str(adapter->getError());
+    std::string text = buff.str();
+    QString Qtext=QString::fromStdString(text);
+    status_bar->showMessage(Qtext); */
     // for relation
     emit updateAvailableRelations();
 }
@@ -132,6 +152,7 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
 
 void DSMainWindow::updateAvailableRelations(){
     rel_dock->updateAvailableRelations();
+
 }
 
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
@@ -144,9 +165,9 @@ void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
     graph_manager->clear();
-
     // for relation
     emit updateAvailableRelations();
+
 }
 
 DSMainWindow::DSMainWindow(QWidget* parent):
@@ -161,9 +182,11 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     graph_manager(new GraphManager()),
     graph_view(new QGraphicsView(this)),
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
-    menu_bar(new QMenuBar(this))
-    //status_bar(new QStatusBar(this))
+    menu_bar(new QMenuBar(this)),
+    status_bar(new QStatusBar(this)),
+    logFile("log.txt")
 {
+    setupLog();
     setupUI();
     // setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
     //                                 qApp->desktop()->availableGeometry()));
@@ -172,6 +195,8 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
     graph_manager->linkGraphModel(graph_view);
+
+
 
     //this is the relations colors after 10 relation start from beginning
     colors.push_back(QColor(qRgb(213,0,0)));

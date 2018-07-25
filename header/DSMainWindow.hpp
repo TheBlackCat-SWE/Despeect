@@ -17,11 +17,13 @@
 #include <QDockWidget>
 //#include <QToolBar>
 #include <QMenuBar>
-//#include <QStatusBar>
+#include <QStatusBar>
 #include <QMap>
 #include <QAction>
 #include <QWidget>
 #include <QGraphicsView>
+#include <sstream>
+#include <QFile>
 
 class DSAdapter;
 class DSListModel;
@@ -29,6 +31,7 @@ class DSListModel;
 class DSMainWindow: public QMainWindow {
     Q_OBJECT
 private:
+    QFile logFile;
     DSAdapter* adapter;
     QString voice_path;
     DSListModel* list_model;
@@ -42,7 +45,7 @@ private:
 
     //QToolBar* tool_bar;
     QMenuBar* menu_bar;
-    //QStatusBar* status_bar;
+    QStatusBar* status_bar;
     QMap<QString, QAction*> actions;
 
     //Field: list of all colors available to print the graph
@@ -52,6 +55,7 @@ private:
     void createMenus();
     void doConnections();
     void setupUI();
+    void setupLog();
 signals:
     /*
      * Prevents the models from fetching data linked to the voice before loading voice.json

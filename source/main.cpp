@@ -5,11 +5,11 @@
 
 #include <QApplication>
 #include "DSMainWindow.hpp"
+#include <iostream>
 
 
 int main(int argc, char **argv) {
         QApplication a(argc, argv);
-
         DSMainWindow main_win;
         main_win.setWindowState(Qt::WindowMaximized);
         main_win.show();

@@ -55,7 +55,7 @@ void DSAdapter::loadPlugin(const std::string& plugin_path) {
 DSAdapter *DSAdapter::createAdapter() {
     DSAdapter* ptr = new DSAdapter;
 
-    ptr->initSpeect(s_logger_console_new(true));
+    ptr->initSpeect(s_logger_console_new(false));
 
     if(!ptr->hasError()) {
         ptr->loadPlugin("audio_riff.spi");
@@ -477,4 +477,8 @@ DSAdapter::~DSAdapter() {
     //MEMORY LEAK HERE
 
     quitSpeect();
+
+}
+s_erc DSAdapter::getError(){
+    return error;
 }
