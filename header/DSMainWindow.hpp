@@ -31,7 +31,7 @@ class DSListModel;
 class DSMainWindow: public QMainWindow {
     Q_OBJECT
 private:
-    QFile logFile;
+    QFile* logFile;
     DSAdapter* adapter;
     QString voice_path;
     DSListModel* list_model;
