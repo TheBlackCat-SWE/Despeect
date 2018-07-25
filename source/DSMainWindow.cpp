@@ -19,7 +19,7 @@
 #include <iostream>
 
 void DSMainWindow::setupLog(){
-    logFile.remove();
+    logFile->remove();
     stderr=freopen("log.txt","a",stderr);
 }
 
@@ -184,7 +184,7 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
     menu_bar(new QMenuBar(this)),
     status_bar(new QStatusBar(this)),
-    logFile("log.txt")
+    logFile(new QFile("log.txt"))
 {
     setupLog();
     setupUI();
