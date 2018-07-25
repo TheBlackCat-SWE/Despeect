@@ -237,6 +237,8 @@ public:
     static std::map<std::string, std::string> toStdMap(const SMap* spct_map);
 
     ~DSAdapter();
+
+    s_erc getError();
 };
 
 #endif // DSADAPTER_H
