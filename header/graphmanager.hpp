@@ -19,14 +19,14 @@ class GraphManager : public QObject {
     
 private:
     static const int Radius=15;
-    //model of the relation printed on the graph
-    QStandardItemModel* RelationsModel;
-    //list of all the nodes printed on the graph
-    QMap<QString, Node*> Printed;
     //map of all the relations and the items that represent the relations on the graph
     QMap<QString,QGraphicsRectItem*> Relations;
     
 public:
+    //model of the relation printed on the graph
+    QStandardItemModel* RelationsModel;
+    //list of all the nodes printed on the graph
+    QMap<QString, Node*> Printed;
     QGraphicsScene* Graph;
     GraphManager();
     ~GraphManager();

@@ -5,6 +5,9 @@
 #include "arc.hpp"
 #include "DSItem.hpp"
 #include "node.hpp"
+#include "QInputDialog"
+#include "QLineEdit"
+#include <QMessageBox>
 
 
 GraphManager::GraphManager():Graph(new QGraphicsScene()),Relations(),RelationsModel(new QStandardItemModel()) {
@@ -201,14 +204,6 @@ void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList 
 }
 
 
-
-
-
-/*
- * Description: changes the visibility of the relations in the graph
- * @param QStandardItem * - Qt standard item as relation reference (see Qt docs for more info)
- * @return void
- */
 void GraphManager::changeRelationVisibility(QStandardItem *key) {
     //find the item that represent the relation in the graph model and hide it
     auto it=Relations.find(key->text());
@@ -234,10 +229,13 @@ void GraphManager::notifySelection() {
 
 
 void GraphManager::selectItem(const QString &relation, const QString &path) {
-    ID searchedItem(path,relation);
-    foreach(Node* item,Printed)
-    {
-        if((*item)==searchedItem)
+    foreach(Node* item,Printed) {
+        if(item->getPath() == path && item->getRelation() == relation) {
             item->setFocus();
-    }
+            QMessageBox msgBox;
+            msgBox.setText("sono entrato");
+            msgBox.exec();
+            }
+        }
+
 }

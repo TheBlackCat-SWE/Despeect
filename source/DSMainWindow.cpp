@@ -17,6 +17,8 @@
 #include <string>
 #include <QDebug>
 #include <iostream>
+#include <QInputDialog>
+#include <QLineEdit>
 
 void DSMainWindow::setupLog(){
     logFile->remove();
@@ -26,6 +28,7 @@ void DSMainWindow::setupLog(){
 void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
+    actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("face-angel"),"insert node path", this);
 }
 
 void DSMainWindow::createMenus() {
@@ -42,6 +45,7 @@ void DSMainWindow::createMenus() {
 void DSMainWindow::doConnections() {
     connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
+    connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
     connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
@@ -96,6 +100,16 @@ void DSMainWindow::showVoicePath() {
     QMessageBox msgBox;
     msgBox.setText(voice_path);
     msgBox.exec();
+}
+
+void DSMainWindow::selectNodeFromPath() {
+    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+    QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
+                                            (*myNode)->getPath(), QLineEdit::Normal);
+    if(!text.isNull()) {
+    QString realPath((*myNode)->getPath()+text);
+    graph_manager->selectItem((*myNode)->getRelation(),realPath);
+    }
 }
 
 void DSMainWindow::loadTextFromFile() {
