@@ -99,7 +99,7 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 
-const QString& Node::getPath() {
+const QString &Node::getPath() {
     return identifier.getPath();
 }
 
