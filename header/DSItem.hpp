@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <QMap>
 
 
 /**
@@ -107,7 +108,7 @@ public:
      * @return A map containing all the names associated with their
      * corresponding values.
      */
-    std::map<std::string, std::string> getFeatMap() const;
+    QMap<std::string, std::string> getFeatMap() const;
     // TODO Grant access through paths
 
 };

@@ -4,12 +4,14 @@
 #include <QGraphicsScene>
 
 
-Node::Node(const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,const QColor& color, QGraphicsItem*parent)
+Node::Node(const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,
+           const QColor& color, QGraphicsItem*parent, QMap<std::string,std::string> feat)
    :QGraphicsObject(parent)
    ,color(color)
    ,identifier(id,rel)
    ,name(path)
-   ,radius(radius) {
+   ,radius(radius)
+   ,features(feat){
     //link QGraphicsObject signal to the slot
     connect(this,SIGNAL(visibleChanged()),this,SLOT(catchVisibilityChange()));
     //allow item movement selection and allow item notification to scene Model
@@ -111,4 +113,8 @@ const QString &Node::getRelation() {
 
 void Node::catchVisibilityChange() {
     notifyVisibilityChange(isVisible());
+}
+
+QMap<std::string,std::string> Node::getFeatures(){
+    return features;
 }
