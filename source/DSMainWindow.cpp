@@ -28,7 +28,8 @@ void DSMainWindow::setupLog(){
 void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
-    actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("face-angel"),"insert node path", this);
+    actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
+    actions["showNodeFeatures"] = new QAction(QIcon::fromTheme("dialog-information"),"View Node Feature", this);
 }
 
 void DSMainWindow::createMenus() {
@@ -46,6 +47,7 @@ void DSMainWindow::doConnections() {
     connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
+    connect(actions["showNodeFeatures"], &QAction::triggered, this, &DSMainWindow::showNodeFeatures);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
     connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
@@ -111,6 +113,26 @@ void DSMainWindow::selectNodeFromPath() {
     graph_manager->selectItem((*myNode)->getRelation(),realPath);
     }
 }
+
+void DSMainWindow::showNodeFeatures() {
+    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+    QMap<std::string,std::string> feat=(*myNode)->getFeatures();
+    QStandardItemModel* table_model = new QStandardItemModel(feat.size(), 2);
+    auto i=feat.begin();
+    int row=0;
+    while(i!=feat.end()){
+            QStandardItem *itemKey = new QStandardItem(QString(i.key().c_str()));
+            table_model->setItem(row, 0, itemKey);
+            QStandardItem *itemValue = new QStandardItem(QString(i.value().c_str()));
+            table_model->setItem(row, 1, itemValue);
+            row++;
+            ++i;
+    }
+    QTableView* table=new QTableView();
+    table->setModel(table_model);
+    table->show();
+}
+
 
 void DSMainWindow::loadTextFromFile() {
     QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
@@ -209,7 +231,6 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
     graph_manager->linkGraphModel(graph_view);
-
 
 
     //this is the relations colors after 10 relation start from beginning

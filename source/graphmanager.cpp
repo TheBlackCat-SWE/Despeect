@@ -45,7 +45,9 @@ bool GraphManager::printRelation(const QString &id, const DSItem *SpeectNode, co
         Graph->addItem(parentRelation);
         //add to nodes that must be checked the head node
         ToBeChecked.push_back(SpeectNode);
-        Node* t=new Node(QString::fromStdString(SpeectNode->getPath()),id,QString::fromStdString(SpeectNode->getName()),Radius+10,Radius+20,Radius,Color,parentRelation);
+        Node* t=new Node(QString::fromStdString(SpeectNode->getPath()),id,QString::fromStdString(SpeectNode->getName()),
+                         Radius+10,Radius+20,Radius,Color,parentRelation,
+                         QMap<std::string,std::string> (SpeectNode->getFeatMap()));
         Printed.insert(QString::fromStdString(SpeectNode->getId()),t);
         FixHeadPosition(*t);
         //cicle till there is no more nodes to be checked
@@ -155,7 +157,9 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
         if(next)
         {
             tbc.push_front(next);
-            Node* temp=new Node(QString::fromStdString(next->getPath()),relation,QString::fromStdString(next->getName()),me->pos().x()+4*Radius,me->pos().y(),Radius,color,parentRelation);
+            Node* temp=new Node(QString::fromStdString(next->getPath()),relation,QString::fromStdString(next->getName()),
+                                me->pos().x()+4*Radius,me->pos().y(),Radius,color,parentRelation,
+                                QMap<std::string,std::string> (next->getFeatMap()));
             Printed.insert(QString::fromStdString(next->getId()), temp);
             temp->clearFocus();
             Arc* a=new Arc(10,Radius,color,0,1,parentRelation,false);
@@ -169,7 +173,9 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
         if(child)
         {
             tbc.push_front(child);
-            Node* temp=new Node(QString::fromStdString(child->getPath()),relation,QString::fromStdString(child->getName()),me->pos().x(),me->pos().y()+4*Radius,Radius,color,parentRelation);
+            Node* temp=new Node(QString::fromStdString(child->getPath()),relation,QString::fromStdString(child->getName()),
+                                me->pos().x(),me->pos().y()+4*Radius,Radius,color,parentRelation,
+                                QMap<std::string,std::string> (child->getFeatMap()));
             Printed.insert(QString::fromStdString(child->getId()),temp);
             temp->clearFocus();
             Arc* a=new Arc(10,Radius,color,0,1,parentRelation,false);
@@ -232,9 +238,6 @@ void GraphManager::selectItem(const QString &relation, const QString &path) {
     foreach(Node* item,Printed) {
         if(item->getPath() == path && item->getRelation() == relation) {
             item->setFocus();
-            QMessageBox msgBox;
-            msgBox.setText("sono entrato");
-            msgBox.exec();
             }
         }
 

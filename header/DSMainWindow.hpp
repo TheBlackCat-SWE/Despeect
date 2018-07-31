@@ -66,6 +66,7 @@ private slots:
     void loadVoice();
     void showVoicePath();
     void selectNodeFromPath();
+    void showNodeFeatures();
     void loadTextFromFile();
     void loadText();
     void execUttProc(std::string utt_proc);

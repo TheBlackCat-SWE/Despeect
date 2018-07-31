@@ -14,6 +14,7 @@ private:
     ID identifier;
     QString name;
     QColor color;
+    QMap<std::string,std::string> features;
     const int radius;
 public:
     
@@ -27,8 +28,10 @@ public:
      * @param radius  node radius
      * @param color node color
      * @param parent  Qt graphic item as parent
+     *
      */
-    Node(const QString& id,const QString&rel,const QString& path, const int x, const int y, const int radius,const QColor& color, QGraphicsItem*parent);
+    Node(const QString& id,const QString&rel,const QString& path, const int x, const int y, const int radius,
+         const QColor& color, QGraphicsItem*parent, QMap<std::string,std::string> feat);
     
     /**
      * @brief redefinition of the == operator
@@ -87,6 +90,13 @@ public:
      * @return const QString &
      */
     const QString &getRelation();
+
+    /**
+     * @brief returns the features
+     * @return const QString &
+     */
+
+    QMap<std::string,std::string> getFeatures();
     
 signals:
 
