@@ -78,8 +78,8 @@ void DSMainWindow::setupUI() {
     setMenuBar(menu_bar);
     //tool_bar->setMovable(false);
     //addToolBar(Qt::TopToolBarArea, tool_bar);
-    status_bar->setSizeGripEnabled(true);
-    //status_bar->setStyleSheet("color: red");
+    status_bar->setSizeGripEnabled(false);
+    status_bar->setStyleSheet("color: red");
     setStatusBar(status_bar);
     graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     createActions();
@@ -105,6 +105,7 @@ void DSMainWindow::showVoicePath() {
 }
 
 void DSMainWindow::selectNodeFromPath() {
+    status_bar->clearMessage();
     if(graph_manager->Graph->focusItem()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
         QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
@@ -113,10 +114,13 @@ void DSMainWindow::selectNodeFromPath() {
             QString realPath((*myNode)->getPath()+text);
             graph_manager->selectItem((*myNode)->getRelation(),realPath);
         }
-    }
+    } else
+        status_bar->showMessage("select a node");
+
 }
 
 void DSMainWindow::showNodeFeatures() {
+    status_bar->clearMessage();
     if(graph_manager->Graph->focusItem()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
         QMap<std::string,std::string> feat=(*myNode)->getFeatures();
@@ -135,7 +139,10 @@ void DSMainWindow::showNodeFeatures() {
         table->setModel(table_model);
         table->resizeColumnsToContents();
         table->show();
-    }
+    } else
+        status_bar->showMessage("select a node");
+
+
 }
 
 
