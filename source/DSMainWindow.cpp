@@ -105,32 +105,37 @@ void DSMainWindow::showVoicePath() {
 }
 
 void DSMainWindow::selectNodeFromPath() {
-    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-    QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
+    if(graph_manager->Graph->focusItem()){
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+        QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
                                             (*myNode)->getPath(), QLineEdit::Normal);
-    if(!text.isNull()) {
-    QString realPath((*myNode)->getPath()+text);
-    graph_manager->selectItem((*myNode)->getRelation(),realPath);
+        if(!text.isNull()) {
+            QString realPath((*myNode)->getPath()+text);
+            graph_manager->selectItem((*myNode)->getRelation(),realPath);
+        }
     }
 }
 
 void DSMainWindow::showNodeFeatures() {
-    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-    QMap<std::string,std::string> feat=(*myNode)->getFeatures();
-    QStandardItemModel* table_model = new QStandardItemModel(feat.size(), 2);
-    auto i=feat.begin();
-    int row=0;
-    while(i!=feat.end()){
+    if(graph_manager->Graph->focusItem()){
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+        QMap<std::string,std::string> feat=(*myNode)->getFeatures();
+        QStandardItemModel* table_model = new QStandardItemModel(feat.size(), 2);
+        auto i=feat.begin();
+        int row=0;
+        while(i!=feat.end()){
             QStandardItem *itemKey = new QStandardItem(QString(i.key().c_str()));
             table_model->setItem(row, 0, itemKey);
             QStandardItem *itemValue = new QStandardItem(QString(i.value().c_str()));
             table_model->setItem(row, 1, itemValue);
             row++;
             ++i;
+        }
+        QTableView* table=new QTableView();
+        table->setModel(table_model);
+        table->resizeColumnsToContents();
+        table->show();
     }
-    QTableView* table=new QTableView();
-    table->setModel(table_model);
-    table->show();
 }
 
 
