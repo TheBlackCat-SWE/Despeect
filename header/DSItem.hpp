@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <QMap>
 
 
 /**
@@ -22,17 +23,13 @@ class DSItem {
 private:
     const SItem* item;
     DSItem(const SItem* item);
+
 public:
     static DSItem* create(const SItem* item);
 
-    const bool operator==(const DSItem& other) const{
-        return item == other.item;
-    }
     const bool Equals(const DSItem& other) const{
-        return item == other.item;
-    }
-    const bool operator<(const DSItem& item) const{
-        return false;
+        s_erc error = S_SUCCESS;
+        return SItemEqual(item, other.item, &error);
     }
 
     /**
@@ -41,6 +38,20 @@ public:
      * @return The given item's name.
      */
     std::string getName() const;
+
+    /*
+     * TODO
+     */
+    std::string getPath() const;
+    /*
+     * TODO
+     */
+    std::string getRelation() const;
+
+    std::string getId() const {
+        return getRelation()+":"+getPath();
+    }
+
     /**
      * @brief next
      * Gets the item next to the given one in the current relation.
@@ -97,8 +108,9 @@ public:
      * @return A map containing all the names associated with their
      * corresponding values.
      */
-    std::map<std::string, std::string> getFeatMap() const;
+    QMap<std::string, std::string> getFeatMap() const;
     // TODO Grant access through paths
+
 };
 
 #endif // DSITEM_H

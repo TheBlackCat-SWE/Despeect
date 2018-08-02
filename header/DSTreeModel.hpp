@@ -26,7 +26,11 @@ private:
     DSTreeItem* root;
 
     void setupModelData();
+public slots:
+    //Using this slot should always be the only proper way to call setupModelData
+    void fetchData();
 public:
+    //TODO Add tristate for utt_type checkboxes
     DSTreeModel(QObject* parent, DSAdapter* adapter);
     QModelIndex index(int row, int column,
                       const QModelIndex& parent = QModelIndex()) const override;
@@ -35,8 +39,11 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role = Qt::EditRole) override;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;
+    DSTreeItem* getRoot() { return root; }
     ~DSTreeModel();
 };
 

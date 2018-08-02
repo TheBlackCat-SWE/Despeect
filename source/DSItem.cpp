@@ -5,7 +5,7 @@
 
 #include "DSItem.hpp"
 #include "DSAdapter.hpp"
-
+#include "QMap"
 
 DSItem::DSItem(const SItem *item) : item(item) {}
 
@@ -17,13 +17,47 @@ DSItem* DSItem::create(const SItem* item) {
 }
 
 std::string DSItem::getName() const {
-    s_erc error = S_SUCCESS;
-
-    const char* name = SItemGetName(item, &error);
-    if(S_CHK_ERR(&error, S_CONTERR, "getName",
-              "Failed to retrieve item name\n"))
+    s_erc error=S_SUCCESS;
+    if(SItemFeatureIsPresent(item,"name",&error))
+        return SItemGetName(item,&error);
+    else
         return "";
-    return std::string(name);
+}
+
+std::string DSItem::getPath() const {
+    s_erc error = S_SUCCESS;
+    const SItem * it = const_cast<const SItem *>(item);
+    std::string path="";
+    const SRelation* rel=SItemRelation(it,&error);
+    bool fail=false;
+    SItem *temp=NULL;
+    while(!SItemEqual(it,SRelationHead(rel,&error),&error)&&!fail)
+    {
+        temp=SItemPrev(it,&error);
+        if(temp!=NULL)
+        {
+            path=".n"+path;
+            it=temp;
+        }
+        else{
+            temp=SItemParent(it,&error);
+            if(temp!=NULL)
+            {
+                path=".daughter"+path;
+                it=temp;
+            }
+            else
+                fail=true;
+        }
+    }
+    return fail ? "" : path=" "+path;
+}
+
+std::string DSItem::getRelation() const {
+    s_erc error = S_SUCCESS;
+    const SRelation* rel=SItemRelation(item,&error);
+    std::string relName = std::string(SRelationName(rel,&error));
+    return relName;
 }
 
 DSItem *DSItem::next() const {
@@ -81,7 +115,7 @@ DSItem *DSItem::lastChild() const {
    return create(child);
 }
 
-std::vector<std::__cxx11::string> DSItem::getFeatList() const {
+std::vector<std::string> DSItem::getFeatList() const {
     s_erc error = S_SUCCESS;
 
     SList* list = SItemFeatKeys(item, &error);
@@ -93,14 +127,26 @@ std::vector<std::__cxx11::string> DSItem::getFeatList() const {
     return std_list;
 }
 
-std::map<std::string, std::string> DSItem::getFeatMap() const {
+QMap<std::string, std::string> DSItem::getFeatMap() const {
     s_erc error = S_SUCCESS;
 
-    std::map<std::string, std::string> feat_map;
+    QMap<std::string, std::string> feat_map;
 
     std::vector<std::string> feat_list(getFeatList());
-    for(auto&& feat_key : feat_list) {
-        feat_map[feat_key] = SItemGetString(item, feat_key.c_str(), &error);
+    for(auto feat_key=feat_list.begin();!(feat_key==(feat_list.end())); ++feat_key) {
+        const SObject* o=SItemGetObject(item, feat_key->c_str(), &error);
+        if(SObjectIsType(o,"SString",&error)) {
+            std::string value(SItemGetString(item, feat_key->c_str(), &error));
+            feat_map.insert(*feat_key,value);
+        }else
+        if(SObjectIsType(o,"SInt",&error)) {
+            sint32 value(SItemGetInt(item, feat_key->c_str(), &error));
+            feat_map.insert(*feat_key,std::to_string(value));
+        }else
+        if(SObjectIsType(o,"SFloat",&error)) {
+            float value(SItemGetFloat(item, feat_key->c_str(), &error));
+            feat_map.insert(*feat_key,std::to_string(value));
+        }
     }
 
     S_CHK_ERR(&error, S_CONTERR, "getFeatMap",

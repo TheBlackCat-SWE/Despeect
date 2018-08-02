@@ -5,6 +5,7 @@
 
 #include "DSAdapter.hpp"
 #include "DSRelation.hpp"
+#include <QDebug>
 
 
 DSAdapter::DSAdapter() :
@@ -31,7 +32,8 @@ void DSAdapter::quitSpeect() {
 
 void DSAdapter::loadText(const std::string& text) {
     S_CLR_ERR(&error);
-    this->text = SObjectSetString(text.c_str(), &error);
+    if(!text.empty())
+        this->text = SObjectSetString(text.c_str(), &error);
     S_CHK_ERR(&error, S_CONTERR, "loadText",
               "Failed to load text\n");
 }
@@ -50,13 +52,12 @@ void DSAdapter::loadPlugin(const std::string& plugin_path) {
               "Failed to load &s plugin\n", plugin_path);
 }
 
-DSAdapter *DSAdapter::createAdapter(const std::string& voice_conf_path) {
+DSAdapter *DSAdapter::createAdapter() {
     DSAdapter* ptr = new DSAdapter;
 
-    ptr->initSpeect(s_logger_console_new(true));
+    ptr->initSpeect(s_logger_console_new(false));
 
     if(!ptr->hasError()) {
-        ptr->loadVoice(voice_conf_path);
         ptr->loadPlugin("audio_riff.spi");
         return ptr;
     }
@@ -66,21 +67,31 @@ DSAdapter *DSAdapter::createAdapter(const std::string& voice_conf_path) {
     }
 }
 
-bool DSAdapter::loadInputText(const std::string& text) {
+bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
     // Public interface non-const calls should check for internal integrity
     if(hasError()) {
-        S_WARNING(error, "loadInputText", "The system was found to be"
+        S_WARNING(error, "saveOutputAudio", "The system was found to be"
                   " in an inconsistent state before this func call.\n"
                   "This may result in unexpected behaviour\n");
     }
 
     S_CLR_ERR(&error);
-    loadText(text);
-    S_CHK_ERR(&error, S_CONTERR, "loadInputText",
-              "Failed to load input text\n");
-
-    if(!hasError()) return true;
-    else return false;
+    const SObject* audio_obj = SUtteranceGetFeature(utt, "audio", &error);
+    if(hasError()) {
+        S_WARNING(error, "saveOutputAudio", "Failed to fetch audio object,"
+                  " no audio feature found in the current utterance\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+    SObjectSave(audio_obj, audio_output_path.c_str(), "riff", &error);
+    delete audio_obj;
+    if(hasError()) {
+        S_WARNING(error, "saveOutputAudio", "Failed to save audio object, "
+                  "error using 'audio_riff' plugin\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+    return true;
 }
 
 bool DSAdapter::synthesize() {
@@ -104,32 +115,6 @@ bool DSAdapter::synthesize() {
 
     if(!hasError()) return true;
     else return false;
-}
-
-bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
-    // Public interface non-const calls should check for internal integrity
-    if(hasError()) {
-        S_WARNING(error, "saveOutputAudio", "The system was found to be"
-                  " in an inconsistent state before this func call.\n"
-                  "This may result in unexpected behaviour\n");
-    }
-
-    S_CLR_ERR(&error);
-    const SObject* audio_obj = SUtteranceGetFeature(utt, "audio", &error);
-    if(hasError()) {
-        S_WARNING(error, "saveOutputAudio", "Failed to fetch audio object,"
-                  " no audio feature found in the current utterance\n");
-        S_CLR_ERR(&error);
-        return false;
-    }
-    SObjectSave(audio_obj, audio_output_path.c_str(), "riff", &error);
-    if(hasError()) {
-        S_WARNING(error, "saveOutputAudio", "Failed to save audio object, "
-                  "error using 'audio_riff' plugin\n");
-        S_CLR_ERR(&error);
-        return false;
-    }
-    return true;
 }
 
 bool DSAdapter::execUttType(const std::string& utt_type) {
@@ -158,13 +143,125 @@ bool DSAdapter::execUttType(const std::string& utt_type) {
     else return false;
 }
 
-bool DSAdapter::hasError() const { return error != S_SUCCESS; }
+bool DSAdapter::execUttProcList(const std::vector<std::string>& proc_list) {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "execUttProcList", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+    // Checks whether loadInputText was called successfully
+    if(!text) {
+        S_WARNING(error, "execUttProcList", "Input text not loaded yet\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+
+    resetUtterance();
+    // Creates and initializes a new utterance if needed
+    if(!utt) {
+        S_CLR_ERR(&error);
+        utt = S_NEW(SUtterance, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
+                     "Failed to create new utterance\n"))
+            return false;
+        S_CLR_ERR(&error);
+        SUtteranceInit(&utt, voice, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProcList",
+                     "Failed to initialize new utterance\n"))
+            return false;
+        //set the text of the utterance that speect will use to the one of the configuration
+        SUtteranceSetFeature(utt,"input",text, &error);
+    }
+
+    for(auto&& utt_proc_key : proc_list) {
+        if(!execUttProc(utt_proc_key))
+            return false;
+    }
+    return true;
+}
+
+//FIXME Come mai non mi serve il testo?
+bool DSAdapter::execUttProc(const std::string& utt_proc_key) {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "execUttProc", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+    // Checks whether loadInputText was called successfully
+    if(!text) {
+        S_WARNING(error, "execUttProc", "Input text not loaded yet\n");
+        S_CLR_ERR(&error);
+        return false;
+    }
+
+    // Creates and initializes a new utterance if needed
+    if(!utt) {
+        S_CLR_ERR(&error);
+        utt = S_NEW(SUtterance, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                     "Failed to create new utterance\n"))
+            return false;
+        S_CLR_ERR(&error);
+        SUtteranceInit(&utt, voice, &error);
+        if(S_CHK_ERR(&error, S_CONTERR, "execUttProc",
+                     "Failed to initialize new utterance\n"))
+            return false;
+        //set the text of the utterance that speect will use to the one of the configuration
+        SUtteranceSetFeature(utt,"input",text, &error);
+    }
+
+    S_CLR_ERR(&error);
+
+    const SUttProcessor* utt_proc = SVoiceGetUttProc(voice, utt_proc_key.c_str(), &error);
+
+    if(S_CHK_ERR(&error,
+                 S_CONTERR,
+                 "execUttProc",
+                 "Failed to retrieve %s utterance type key\n",
+                 utt_proc_key.c_str()))
+    {
+        return false;
+    }
+
+    SUttProcessorRun(utt_proc, utt, &error);
+
+   if(S_CHK_ERR(&error,
+                S_CONTERR,
+                "execUttProc",
+                "Failed to run %s utterance processor on current utterance\n",
+                utt_proc_key.c_str()))
+   {
+        return false;
+   }
+
+    return true;
+}
+
+bool DSAdapter::resetUtterance() {
+    // Public interface non-const calls should check for internal integrity
+    if(hasError()) {
+        S_WARNING(error, "resetUtterance", "The system was found to be"
+                  " in an inconsistent state before this func call.\n"
+                  "This may result in unexpected behaviour\n");
+    }
+
+    if(utt != NULL) {
+        S_DELETE(utt, "resetUtterance", &error);
+        delete utt;
+        return true;
+    }
+    return false;
+}
+
+bool DSAdapter::hasError() const {
+    return error != S_SUCCESS;
+}
 
 std::string DSAdapter::getText() const {
     s_erc error = S_SUCCESS;
-
     std::string str = std::string(SObjectGetString(text, &error));
-
     S_CHK_ERR(&error, S_CONTERR, "getText",
               "Failed to get text string\n");
     return str;
@@ -380,4 +477,8 @@ DSAdapter::~DSAdapter() {
     //MEMORY LEAK HERE
 
     quitSpeect();
+
+}
+s_erc DSAdapter::getError(){
+    return error;
 }
