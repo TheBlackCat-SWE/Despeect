@@ -69,3 +69,5 @@ The following instruction are required in order to configure DeSpeect:
 ## Quickstart
 
 A (brief) example of usage
+
+<img src="https://raw.githubusercontent.com/theBlackCat-SWE/master/readme_images/despeect.png" alt="Despeect main window">
