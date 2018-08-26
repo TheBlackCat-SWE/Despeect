@@ -31,7 +31,7 @@ DeSpeect has been developed and tested on Ubuntu(16.04 LTS).
 ## Building and Installing
 
 
-In order to successfully build DeSpeect, you must:
+In order to successfully build DeSpeect, The following step must be taken :
 
 1. Clone the Despeect repository
 2. Install Speect
@@ -41,7 +41,7 @@ In order to successfully build DeSpeect, you must:
 
 1. Open a terminal
 2. Go to the \<install-directory\> (of your choice)
-3. issue the command
+3. Issue the command:
 ``` 
 git clone https://github.com/TheBlackCat-SWE/Despeect.git 
 ```
@@ -50,7 +50,7 @@ git clone https://github.com/TheBlackCat-SWE/Despeect.git
 
 1. Open a terminal
 2. Go to the \<install-directory\>/Despeect/SpeectLib/
-3. issue the command
+3. Issue the command:
 ```
 install.sh
 ```
@@ -68,13 +68,12 @@ The following step must be taken in order to correctly configure DeSpeect:
 5. Click on button 'Configure Project'
 
 
-## Quickstart - generate HRG graph
+## Example of use - generate HRG graph
 
-A (brief) example 
 
 <img src="https://github.com/TheBlackCat-SWE/Despeect/blob/master/readme_images/despeect.png" alt="Despeect main window">
 
-In order to successfully generate a HRG you must do:
+In order to successfully generate a HRG the following step must be taken :
 
 1. Load a configuration file
 2. Insert text 
@@ -106,6 +105,6 @@ In order to generate  HRG you can:
 
 clicking the button 'Run All' and 'Run Step' respectively.
 
-The HRG will be shown in (5)
+The HRG will be shown in (5).
 
 
