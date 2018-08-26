@@ -31,9 +31,23 @@
 *.out
 *.app
 
+#ignore cmake user file
 *.user*
 
 #ignore everything in SpeectLib except SpeectLib/*.sh
 !SpeectLib/
 SpeectLib/*
 !SpeectLib/*.sh
+
+#ignore test build folder
+test-framework/build
+
+# ignore images
+*.bmp
+*.gif
+*.jpg
+*.jpeg
+*.png
+*.svg
+*.tiff
+*.tiff
