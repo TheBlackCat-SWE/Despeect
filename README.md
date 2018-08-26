@@ -70,4 +70,4 @@ The following instruction are required in order to configure DeSpeect:
 
 A (brief) example of usage
 
-<img src="https://raw.githubusercontent.com/theBlackCat-SWE/master/readme_images/despeect.png" alt="Despeect main window">
+<img src="https://github.com/TheBlackCat-SWE/Despeect/blob/master/readme_images/despeect.png" alt="Despeect main window">
