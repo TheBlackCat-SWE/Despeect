@@ -89,7 +89,7 @@ void DSMainWindow::setupUI() {
 
 
 void DSMainWindow::loadVoice() {
-    voice_path = QFileDialog::getOpenFileName(this, "Oper Configuration File",
+    voice_path = QFileDialog::getOpenFileName(this, "Open Configuration File",
                                               "../../", "Voice Files (*.json)");
     if(!voice_path.isEmpty()) {
         adapter->loadVoice(voice_path.toStdString());
@@ -147,7 +147,7 @@ void DSMainWindow::showNodeFeatures() {
 
 
 void DSMainWindow::loadTextFromFile() {
-    QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
+    QString file_path = QFileDialog::getOpenFileName(this, "Open Text File",
                                                      "../../", "Text Files (*.txt)");
     QFile file(file_path);
     file.open(QFile::ReadOnly | QFile::Text);
