@@ -71,3 +71,40 @@ The following instruction are required in order to configure DeSpeect:
 A (brief) example of usage
 
 <img src="https://github.com/TheBlackCat-SWE/Despeect/blob/master/readme_images/despeect.png" alt="Despeect main window">
+
+In order to successfully generate the HRG graph you must do:
+
+1. Load a configuration file
+2. Insert the text 
+3. Select the Utterance Type and Utterance Processor
+4. Generate the HRG
+
+### Load a configuration file
+
+1. Select File -> Open File or Project (1)
+2. Choose the configuration file voice (you could find some inside the directory \<install-directory\>/Despeect/voices)
+3. Click on Open
+
+### Insert text
+
+Insert the text inside the text box (2)
+
+### Select the Utterance Type and Processor
+
+Once loaded the configuration file, the 'Flow Control' widget(3) will contain
+a checkbox list of all Utterance Type and Processor available.
+Select the required utterance types and processor.
+
+### Generate the HRG
+
+Once you have selected the required utterance types and processor, 
+in order to generate the HRG you can:
+
+- Run All(run all Utterance processor inside the selected Utterance Type)
+- Run Step (run the Utterance processor individually)
+
+clicking the button 'Run All' and 'Run Step' respectively.
+
+The HRG will be printed in (5)
+
+
