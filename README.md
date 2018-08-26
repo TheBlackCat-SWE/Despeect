@@ -5,8 +5,10 @@ A GUI for Speect
 ## Description
 
 DeSpeect is a graphical user interface for Speect.
+
 Speect is a multilingual TTS(text-to-speech) system, initially developed by 
-The Human Language Technologies group at the Meraka Institute, CSIR, South Africa (more information [here](http://speect.sourceforge.net/index.html).
+The Human Language Technologies group at the Meraka Institute, CSIR, South Africa (more information [here](http://speect.sourceforge.net/index.html)).
+
 DeSpeect requires the Speect version maintained and developed by [MIVOQ](https://www.mivoq.it/)(Github repository [here](https://github.com/mivoq/speect)).
 
 ## Requirements 
@@ -56,8 +58,9 @@ The compilation time may vary.
 
 ### Configure the application
 
-At the time of the writing, is necessary to configure Despeect with QtCreator
-The following instruction are required in order to configure DeSpeect
+At the time of the writing, is necessary to configure Despeect with QtCreator.
+
+The following instruction are required in order to configure DeSpeect:
 
 1. Open QtCreator
 2. Select File -> Open File or Project
