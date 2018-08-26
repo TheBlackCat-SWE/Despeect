@@ -41,3 +41,13 @@ SpeectLib/*
 
 #ignore test build folder
 test-framework/build
+
+# ignore images
+*.bmp
+*.gif
+*.jpg
+*.jpeg
+*.png
+*.svg
+*.tiff
+*.tiff
