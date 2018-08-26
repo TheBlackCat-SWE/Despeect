@@ -6,7 +6,8 @@ A GUI for Speect
 
 DeSpeect is a graphical user interface for Speect.
 Speect is a multilingual TTS(text-to-speech) system, initially developed by 
-The Human Language Technologies group at the Meraka Institute, CSIR, South Africa.
+The Human Language Technologies group at the Meraka Institute, CSIR, South Africa (more information [here](http://speect.sourceforge.net/index.html).
+DeSpeect requires the Speect version maintained and developed by [MIVOQ](https://www.mivoq.it/)(Github repository [here](https://github.com/mivoq/speect)).
 
 ## Requirements 
 
@@ -43,7 +44,6 @@ In order to successfully build DeSpeect, you must:
 git clone https://github.com/TheBlackCat-SWE/Despeect.git 
 ```
 
-
 ### Install Speect
 
 1. Open a terminal
@@ -64,3 +64,8 @@ The following instruction are required in order to configure DeSpeect
 3. Go to the directory \<install-directory\>/Despeect and open the file CMakeLists.txt
 4. Click on button 'Open'
 5. Click on button 'Configure Project'
+
+
+## Quickstart
+
+A (brief) example of usage
