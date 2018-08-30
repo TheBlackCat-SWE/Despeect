@@ -2,6 +2,7 @@
 #define NODE_H
 #include "id.hpp"
 #include <QGraphicsObject>
+#include "DSItem.hpp"
 
 /**
  * @brief models a node, which is the graphic representation of an item
@@ -11,13 +12,14 @@ class Node:public QGraphicsObject {
     Q_OBJECT
     
 private:
+    const SItem* core;
     ID identifier;
     QString name;
     QColor color;
     QMap<std::string,std::string> features;
     const int radius;
 public:
-    
+
     /**
      * @brief Node constructor
      * @param id  id of the node
@@ -30,7 +32,7 @@ public:
      * @param parent  Qt graphic item as parent
      *
      */
-    Node(const QString& id,const QString&rel,const QString& path, const int x, const int y, const int radius,
+    Node(const SItem* item,const QString& id,const QString&rel,const QString& path, const int x, const int y, const int radius,
          const QColor& color, QGraphicsItem*parent, QMap<std::string,std::string> feat);
     
     /**
@@ -97,6 +99,9 @@ public:
      */
 
     QMap<std::string,std::string> getFeatures();
+    const SItem* getSItem()const;
+
+
     
 signals:
 
