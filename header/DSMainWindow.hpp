@@ -34,12 +34,14 @@ private:
     QFile* logFile;
     DSAdapter* adapter;
     QString voice_path;
+    QTableView* featuresTable;
     DSListModel* list_model;
     QListView* list_view;
     DSFlowControlDockWidget* flow_dock;
     DSRelationControlDockWidget* rel_dock;
     DSTextDockWidget* text_dock;
     QDockWidget* list_dock;
+    QDockWidget* table_dock;
     GraphManager* graph_manager;
     QGraphicsView* graph_view;
 

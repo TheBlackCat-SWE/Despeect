@@ -71,6 +71,7 @@ void DSMainWindow::setupSB(){
 void DSMainWindow::setupUI() {
     list_view->setModel(list_model);
     list_dock->setWidget(list_view);
+    addDockWidget(Qt::RightDockWidgetArea, table_dock);
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
     addDockWidget(Qt::LeftDockWidgetArea, list_dock);
@@ -137,10 +138,9 @@ void DSMainWindow::showNodeFeatures() {
             row++;
             ++i;
         }
-        QTableView* table=new QTableView();
-        table->setModel(table_model);
-        table->resizeColumnsToContents();
-        table->show();
+        featuresTable->setModel(table_model);
+        table_dock->setWidget(featuresTable);
+        featuresTable->resizeColumnsToContents();
     } else
         status_bar->showMessage("select a node");
 }
@@ -262,9 +262,10 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     rel_dock(new DSRelationControlDockWidget(this,adapter)),
     text_dock(new DSTextDockWidget(this)),
     list_dock(new QDockWidget("Feature Processor", this)),
+    table_dock(new QDockWidget("Selected node features", this)),
     graph_manager(new GraphManager()),
+    featuresTable(new QTableView()),
     graph_view(new QGraphicsView(this)),
-    //tool_bar(new QToolBar("Barra Degli Strumenti", this)),
     menu_bar(new QMenuBar(this)),
     status_bar(new QStatusBar(this)),
     logFile(new QFile("log.txt"))
@@ -274,7 +275,6 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     // setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
     //                                 qApp->desktop()->availableGeometry()));
 
-    //Toglie il flag usando le operazioni bitwise (AND e NOT)
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle("Despeect");
     graph_manager->linkGraphModel(graph_view);
