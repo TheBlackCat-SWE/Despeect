@@ -148,31 +148,36 @@ void DSMainWindow::showNodeFeatures() {
 void DSMainWindow::execFeatProc() {
     s_erc error = S_SUCCESS;
     std::string feature;
-    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-    QModelIndexList index=list_view->selectionModel()->selectedIndexes();
-    const char* key=list_model->data(index[0]).toString().toStdString().c_str();
-    SObject* obj=adapter->execFeatProcessor(key,(*myNode)->getSItem());
-    if(SObjectIsType(obj,"SString",&error)) {
-        std::string value(SObjectGetString(obj,&error));
-        feature=value;
-    } else
-    if(SObjectIsType(obj,"SInt",&error)) {
-        sint32 value(SObjectGetInt(obj, &error));
-        feature=std::to_string(value);
-    } else
-    if(SObjectIsType(obj,"SFloat",&error)) {
-        float value(SObjectGetFloat(obj, &error));
-        feature=std::to_string(value);
-    }
-    if(feature.empty()){
+    status_bar->clearMessage();
+    if(graph_manager->Graph->focusItem()){
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+        QModelIndexList index=list_view->selectionModel()->selectedIndexes();
+        const char* key=list_model->data(index[0]).toString().toStdString().c_str();
+        SObject* obj=adapter->execFeatProcessor(key,(*myNode)->getSItem());
+        if(SObjectIsType(obj,"SString",&error)) {
+            std::string value(SObjectGetString(obj,&error));
+            feature=value;
+        } else
+        if(SObjectIsType(obj,"SInt",&error)) {
+            sint32 value(SObjectGetInt(obj, &error));
+            feature=std::to_string(value);
+        } else
+        if(SObjectIsType(obj,"SFloat",&error)) {
+            float value(SObjectGetFloat(obj, &error));
+            feature=std::to_string(value);
+        }
+        if(feature.empty()){
+            QMessageBox msgBox;
+            msgBox.setText(QString::fromStdString("Selected feature does not exist"));
+            msgBox.exec();
+        }else{
         QMessageBox msgBox;
-        msgBox.setText(QString::fromStdString("Selected feature does not exist"));
+        msgBox.setText(QString::fromStdString(feature));
         msgBox.exec();
-    }else{
-    QMessageBox msgBox;
-    msgBox.setText(QString::fromStdString(feature));
-    msgBox.exec();
-    }
+            }
+        }
+        else
+            status_bar->showMessage("select a node");
 }
 
 
