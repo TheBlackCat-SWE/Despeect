@@ -45,7 +45,7 @@ bool GraphManager::printRelation(const QString &id, const DSItem *SpeectNode, co
         Graph->addItem(parentRelation);
         //add to nodes that must be checked the head node
         ToBeChecked.push_back(SpeectNode);
-        Node* t=new Node(*SpeectNode,QString::fromStdString(SpeectNode->getPath()),id,QString::fromStdString(SpeectNode->getName()),
+        Node* t=new Node(SpeectNode->getSItem(),QString::fromStdString(SpeectNode->getPath()),id,QString::fromStdString(SpeectNode->getName()),
                          Radius+10,Radius+20,Radius,Color,parentRelation,
                          QMap<std::string,std::string> (SpeectNode->getFeatMap()));
         Printed.insert(QString::fromStdString(SpeectNode->getId()),t);
@@ -158,7 +158,7 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
         if(next)
         {
             tbc.push_front(next);
-            Node* temp=new Node(*next,QString::fromStdString(next->getPath()),relation,QString::fromStdString(next->getName()),
+            Node* temp=new Node(next->getSItem(),QString::fromStdString(next->getPath()),relation,QString::fromStdString(next->getName()),
                                 me->pos().x()+4*Radius,me->pos().y(),Radius,color,parentRelation,
                                 QMap<std::string,std::string> (next->getFeatMap()));
             Printed.insert(QString::fromStdString(next->getId()), temp);
@@ -174,7 +174,7 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
         if(child)
         {
             tbc.push_front(child);
-            Node* temp=new Node(*child,QString::fromStdString(child->getPath()),relation,QString::fromStdString(child->getName()),
+            Node* temp=new Node(child->getSItem(),QString::fromStdString(child->getPath()),relation,QString::fromStdString(child->getName()),
                                 me->pos().x(),me->pos().y()+4*Radius,Radius,color,parentRelation,
                                 QMap<std::string,std::string> (child->getFeatMap()));
             Printed.insert(QString::fromStdString(child->getId()),temp);

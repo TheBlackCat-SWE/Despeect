@@ -91,7 +91,7 @@ void DSMainWindow::setupUI() {
 
 
 void DSMainWindow::loadVoice() {
-    voice_path = QFileDialog::getOpenFileName(this, "Oper Configuration File",
+    voice_path = QFileDialog::getOpenFileName(this, "Open Configuration File",
                                               "../../", "Voice Files (*.json)");
     if(!voice_path.isEmpty()) {
         adapter->loadVoice(voice_path.toStdString());
@@ -150,8 +150,8 @@ void DSMainWindow::execFeatProc() {
     std::string feature;
     auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
     QModelIndexList index=list_view->selectionModel()->selectedIndexes();
-    const char* prova=list_model->data(index[0]).toString().toStdString().c_str();
-    SObject* obj=adapter->execFeatProcessor(prova,(*myNode)->core.getSItem());
+    const char* key=list_model->data(index[0]).toString().toStdString().c_str();
+    SObject* obj=adapter->execFeatProcessor(key,(*myNode)->getSItem());
     if(SObjectIsType(obj,"SString",&error)) {
         std::string value(SObjectGetString(obj,&error));
         feature=value;
@@ -164,14 +164,20 @@ void DSMainWindow::execFeatProc() {
         float value(SObjectGetFloat(obj, &error));
         feature=std::to_string(value);
     }
+    if(feature.empty()){
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString("Selected feature does not exist"));
+        msgBox.exec();
+    }else{
     QMessageBox msgBox;
     msgBox.setText(QString::fromStdString(feature));
     msgBox.exec();
+    }
 }
 
 
 void DSMainWindow::loadTextFromFile() {
-    QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
+    QString file_path = QFileDialog::getOpenFileName(this, "Open Text File",
                                                      "../../", "Text Files (*.txt)");
     QFile file(file_path);
     file.open(QFile::ReadOnly | QFile::Text);

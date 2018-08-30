@@ -4,7 +4,7 @@
 #include <QGraphicsScene>
 
 
-Node::Node( DSItem item,const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,
+Node::Node(const SItem* item,const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,
            const QColor& color, QGraphicsItem*parent, QMap<std::string,std::string> feat)
    :QGraphicsObject(parent)
    ,core(item)
@@ -120,4 +120,7 @@ QMap<std::string,std::string> Node::getFeatures(){
     return features;
 }
 
+const SItem* Node::getSItem()const{
+    return core;
+}
 
