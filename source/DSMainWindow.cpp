@@ -231,6 +231,7 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
     }
     // for relation
     emit updateAvailableRelations();
+
 }
 
 void DSMainWindow::updateAvailableRelations(){
@@ -239,8 +240,6 @@ void DSMainWindow::updateAvailableRelations(){
 }
 
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
-    //rel_dock->u
-    //rel_dock->showAll();
     graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
 }
 

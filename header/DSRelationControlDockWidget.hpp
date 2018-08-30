@@ -33,7 +33,6 @@ private:
     QDialogButtonBox* buttonBox;
     QGroupBox* viewBox;
 
-    QPushButton *showAllButton;
 
     void setupUI();
     void doConnections();

@@ -6,21 +6,12 @@ void DSRelationControlDockWidget::setupUI() {
     //start view model definition
     list_view->setModel(rel_list_model);
 
-    QStringList strList;
-    strList << "empty Relations List";
-    //rel_list_model->setStringList(strList);
-
     // end view model definition
 
     // start widget definition
 
     viewBox = new QGroupBox;
     buttonBox = new QDialogButtonBox;
-
-
-    showAllButton = new QPushButton(tr("Show All"));
-
-    buttonBox->addButton(showAllButton,QDialogButtonBox::ActionRole);
 
     // end widget definition
 
@@ -30,12 +21,8 @@ void DSRelationControlDockWidget::setupUI() {
     viewLayout->addWidget(list_view);
     viewBox->setLayout(viewLayout);
 
-    QHBoxLayout* horizontalLayout = new QHBoxLayout;
-    horizontalLayout->addWidget(buttonBox);
-
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->addWidget(viewBox);
-    mainLayout->addLayout(horizontalLayout);
 
     QWidget* internalWidget = new QWidget();
     internalWidget->setLayout(mainLayout);
@@ -49,23 +36,24 @@ void DSRelationControlDockWidget::setupUI() {
     doConnections();
 
     // end connecting all button with slots
+    updateAvailableRelations();
 }
 
 
 void DSRelationControlDockWidget::doConnections() {
 
-    QObject::connect(showAllButton,SIGNAL(clicked()),this,SLOT(showAll()));
+    QObject::connect(rel_list_model,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(showAll()));
 
 }
 
-#include<QDebug>
 
 void DSRelationControlDockWidget::showAll() {
 
-    QStringList checkedkeys = rel_list_model->getCheckedRelationsAsQStringList();
-    QStringList allKeys = rel_list_model->getAllRelationsAsQStringList();
+    QStringList checkedRelations = rel_list_model->getCheckedRelations();
+    QStringList allRelations = rel_list_model->getAllRelations();
 
-    emit showRelation(allKeys,checkedkeys);
+    emit showRelation(allRelations,checkedRelations);
+
 }
 
 void DSRelationControlDockWidget::updateAvailableRelations() {
