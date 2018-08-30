@@ -66,6 +66,7 @@ private slots:
     void loadVoice();
     void showVoicePath();
     void selectNodeFromPath();
+    void execFeatProc();
     void showNodeFeatures();
     void loadTextFromFile();
     void loadText();

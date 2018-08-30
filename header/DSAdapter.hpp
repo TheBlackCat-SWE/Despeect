@@ -190,7 +190,8 @@ public:
      */
     std::vector<std::string> getFeatProcList() const;
 
-    // --------------------------- Voice Related ---------------------------
+    // --------------------------- Feature Related ---------------------------
+    SObject* execFeatProcessor(const char* key, const SItem* item);
 
     // ------------------------- Utterance Related -------------------------
 

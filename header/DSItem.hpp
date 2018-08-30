@@ -25,6 +25,7 @@ private:
     DSItem(const SItem* item);
 
 public:
+
     static DSItem* create(const SItem* item);
 
     const bool Equals(const DSItem& other) const{
@@ -39,13 +40,9 @@ public:
      */
     std::string getName() const;
 
-    /*
-     * TODO
-     */
+
     std::string getPath() const;
-    /*
-     * TODO
-     */
+
     std::string getRelation() const;
 
     std::string getId() const {
@@ -109,7 +106,8 @@ public:
      * corresponding values.
      */
     QMap<std::string, std::string> getFeatMap() const;
-    // TODO Grant access through paths
+
+    const SItem* getSItem()const;
 
 };
 
