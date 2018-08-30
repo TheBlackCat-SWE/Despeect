@@ -468,6 +468,22 @@ std::map<std::string, std::string> DSAdapter::toStdMap(const SMap* spct_map) {
     return std_map;
 }
 
+SObject* DSAdapter::execFeatProcessor(const char* key, const SItem* item) {
+    s_erc error = S_SUCCESS;
+    SObject* obj=0;
+    const SFeatProcessor* featProc=SVoiceGetFeatProc(voice,key,&error);
+    S_CHK_ERR(&error, S_CONTERR, "SVoiceGetFeatProc",
+              "Failed to get feature processor, "
+              "key could not exist\n");
+    if(error == S_SUCCESS) {
+        obj = SFeatProcessorRun(featProc,item,&error);
+        }
+    S_CHK_ERR(&error, S_CONTERR, "SFeatProcessorRun",
+              "Failed to execute feature processor, "
+              "key could not exist\n");
+    return obj;
+}
+
 DSAdapter::~DSAdapter() {
     if(text) S_DELETE(text, "~DSAdapter", &error);
     if(voice) S_DELETE(voice, "~DSAdapter", &error);

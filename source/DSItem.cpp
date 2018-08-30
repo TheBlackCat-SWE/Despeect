@@ -153,3 +153,10 @@ QMap<std::string, std::string> DSItem::getFeatMap() const {
               "Failed to retrieve item feature values\n");
     return feat_map;
 }
+
+const SItem* DSItem::getSItem()const {
+    if(item!= nullptr)
+    return item;
+    else
+        return nullptr;
+}

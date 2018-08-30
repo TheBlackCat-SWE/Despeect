@@ -30,6 +30,7 @@ void DSMainWindow::createActions() {
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
     actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
     actions["showNodeFeatures"] = new QAction(QIcon::fromTheme("dialog-information"),"View Node Feature", this);
+    actions["execFeatProc"] = new QAction(QIcon::fromTheme("dialog-information"),"Execute feature processor", this);
 }
 
 void DSMainWindow::createMenus() {
@@ -48,6 +49,7 @@ void DSMainWindow::doConnections() {
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
     connect(actions["showNodeFeatures"], &QAction::triggered, this, &DSMainWindow::showNodeFeatures);
+    connect(actions["execFeatProc"], &QAction::triggered, this, &DSMainWindow::execFeatProc);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
     connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
@@ -89,7 +91,7 @@ void DSMainWindow::setupUI() {
 
 
 void DSMainWindow::loadVoice() {
-    voice_path = QFileDialog::getOpenFileName(this, "Open Configuration File",
+    voice_path = QFileDialog::getOpenFileName(this, "Oper Configuration File",
                                               "../../", "Voice Files (*.json)");
     if(!voice_path.isEmpty()) {
         adapter->loadVoice(voice_path.toStdString());
@@ -141,13 +143,35 @@ void DSMainWindow::showNodeFeatures() {
         table->show();
     } else
         status_bar->showMessage("select a node");
+}
 
-
+void DSMainWindow::execFeatProc() {
+    s_erc error = S_SUCCESS;
+    std::string feature;
+    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+    QModelIndexList index=list_view->selectionModel()->selectedIndexes();
+    const char* prova=list_model->data(index[0]).toString().toStdString().c_str();
+    SObject* obj=adapter->execFeatProcessor(prova,(*myNode)->core.getSItem());
+    if(SObjectIsType(obj,"SString",&error)) {
+        std::string value(SObjectGetString(obj,&error));
+        feature=value;
+    } else
+    if(SObjectIsType(obj,"SInt",&error)) {
+        sint32 value(SObjectGetInt(obj, &error));
+        feature=std::to_string(value);
+    } else
+    if(SObjectIsType(obj,"SFloat",&error)) {
+        float value(SObjectGetFloat(obj, &error));
+        feature=std::to_string(value);
+    }
+    QMessageBox msgBox;
+    msgBox.setText(QString::fromStdString(feature));
+    msgBox.exec();
 }
 
 
 void DSMainWindow::loadTextFromFile() {
-    QString file_path = QFileDialog::getOpenFileName(this, "Open Text File",
+    QString file_path = QFileDialog::getOpenFileName(this, "Oper Text File",
                                                      "../../", "Text Files (*.txt)");
     QFile file(file_path);
     file.open(QFile::ReadOnly | QFile::Text);

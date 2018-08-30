@@ -4,9 +4,10 @@
 #include <QGraphicsScene>
 
 
-Node::Node(const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,
+Node::Node( DSItem item,const QString& id,const QString& rel,const QString& path, const int x, const int y, const int radius,
            const QColor& color, QGraphicsItem*parent, QMap<std::string,std::string> feat)
    :QGraphicsObject(parent)
+   ,core(item)
    ,color(color)
    ,identifier(id,rel)
    ,name(path)
@@ -118,3 +119,5 @@ void Node::catchVisibilityChange() {
 QMap<std::string,std::string> Node::getFeatures(){
     return features;
 }
+
+
