@@ -422,6 +422,11 @@ DSRelation *DSAdapter::getRel(const std::string &rel) const {
     else return NULL;
 }
 
+bool DSAdapter::nullUtterance() const{
+    return utt == nullptr;
+}
+
+
 std::vector<std::string> DSAdapter::toStdList(const SList* spct_list) {
     s_erc error = S_SUCCESS;
 

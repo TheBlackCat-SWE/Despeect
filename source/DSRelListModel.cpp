@@ -4,98 +4,59 @@
 #include <string>
 #include <QString>
 
-
-//void DSRelListModel::setupModelData() {
-
-//}
+#include<QStandardItem>
 
 
 void DSRelListModel::fetchData() {
+
+    clear();
+
+    if(adapter->nullUtterance() || adapter->hasError()){
+        return;
+    }
+
     std::vector<std::string> vec = adapter->getRelList();
 
-    QStringList res = QStringList();
-    if(vec.empty()) {
-        //res << "Empty relations list";
+    parentItem = invisibleRootItem();
+
+    for(unsigned long i = 0; i < vec.size();++i){
+        QStandardItem *item = new QStandardItem();
+        item->setCheckable(true);
+        item->setCheckState(Qt::Checked);
+        item->setData(QString::fromStdString(vec[i]),Qt::DisplayRole);
+        parentItem->appendRow(item);
     }
-    else {
-        for(std::vector<std::string>::iterator it = vec.begin();
-            it != vec.end();
-            ++it) {
-            res << QString::fromStdString(*it);
-            allItems.insert(QString::fromStdString(*it));
+
+}
+
+QStringList DSRelListModel::getAllRelations() const{
+    QStringList allRelations = QStringList();
+
+    for(int i = 0 ; i < parentItem->rowCount();++i){
+        allRelations << parentItem->child(i,0)->text();
+    }
+    return allRelations;
+}
+
+QStringList DSRelListModel::getCheckedRelations() const{
+
+    QStringList checkedRelations = QStringList();
+
+    for(int i = 0 ; i < parentItem->rowCount();++i){
+        if(parentItem->child(i,0)->checkState() == Qt::Checked){
+            checkedRelations << parentItem->child(i,0)->text();
         }
     }
-    setStringList(res);
+
+    return checkedRelations;
 }
 
 DSRelListModel::DSRelListModel(QObject* parent, DSAdapter* adapter):
-    QStringListModel(parent),
+    QStandardItemModel(parent),
     adapter(adapter)
-{}
-
-
-QVariant DSRelListModel::data(const QModelIndex& index, int role) const {
-
-    if (!index.isValid())
-        return QVariant();
-
-    if(role == Qt::CheckStateRole)
-        return checkedItems.contains(index) ?
-                    Qt::Checked : Qt::Unchecked;
-
-    else if(role == Qt::BackgroundColorRole)
-        return checkedItems.contains(index) ?
-                    QColor("#ffffb2") : QColor("#ffffff");
-
-    return QStringListModel::data(index, role);
+{
 }
 
 
-bool DSRelListModel::setData(const QModelIndex& index,const QVariant &value,int role) {
-
-    if(!index.isValid() || role != Qt::CheckStateRole)
-        return false;
-
-    if(value == Qt::Checked)
-        checkedItems.insert(index);
-    else
-        checkedItems.remove(index);
-
-    // tentative fix to weird behavior show relations
-      //  allItems.insert(index);
-    //
-
-    emit dataChanged(index, index);
-    return true;
-}
 
 
-Qt::ItemFlags DSRelListModel::flags(const QModelIndex& index) const {
-
-    Qt::ItemFlags defaultFlags = QStringListModel::flags(index);
-    if (index.isValid()){
-        return defaultFlags | Qt::ItemIsUserCheckable;
-    }
-    return defaultFlags;
-}
-
-#include<QString>
-#include<QDebug>
-
-
-QStringList DSRelListModel::getCheckedRelationsAsQStringList() const {
-    QStringList res = QStringList();
-
-    foreach(QPersistentModelIndex index, checkedItems) {
-        res << index.data().toString();
-    }
-    return res;
-}
-
-QStringList DSRelListModel::getAllRelationsAsQStringList() const {
-    QStringList res = QStringList();
-    foreach(QString index, allItems) {
-        res << index;
-    }
-    return res;
-}

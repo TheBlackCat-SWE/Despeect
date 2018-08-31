@@ -218,6 +218,15 @@ public:
      */
     DSRelation* getRel(const std::string& rel) const;
 
+
+    /**
+     * @brief nullUtterance
+     * return true iff utterance is NULL, false otherwise
+     *
+     */
+    bool nullUtterance() const;
+
+
     // ------------------------- Utterance Related -------------------------
 
     /**
