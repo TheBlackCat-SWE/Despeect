@@ -29,8 +29,6 @@ void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
     actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
-    actions["showNodeFeatures"] = new QAction(QIcon::fromTheme("dialog-information"),"View Node Feature", this);
-    actions["execFeatProc"] = new QAction(QIcon::fromTheme("dialog-information"),"Execute feature processor", this);
 }
 
 void DSMainWindow::createMenus() {
@@ -48,8 +46,8 @@ void DSMainWindow::doConnections() {
     connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
-    connect(actions["showNodeFeatures"], &QAction::triggered, this, &DSMainWindow::showNodeFeatures);
-    connect(actions["execFeatProc"], &QAction::triggered, this, &DSMainWindow::execFeatProc);
+    connect(graph_manager->Graph, &QGraphicsScene::selectionChanged, this, &DSMainWindow::showNodeFeatures);
+    connect(run_feat_proc, &QPushButton::clicked, this, &DSMainWindow::execFeatProc);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
     connect(this, &DSMainWindow::fetchData, list_model, &DSListModel::fetchData);
     connect(flow_dock, &DSFlowControlDockWidget::execUttProc, this, &DSMainWindow::execUttProc);
@@ -70,7 +68,14 @@ void DSMainWindow::setupSB(){
 */
 void DSMainWindow::setupUI() {
     list_view->setModel(list_model);
-    list_dock->setWidget(list_view);
+    QVBoxLayout* feat_proc_layout=new QVBoxLayout;
+    feat_proc_layout->addWidget(list_view);
+    feat_proc_layout->addWidget(run_feat_proc);
+
+    QWidget* internal_widget = new QWidget();
+    internal_widget->setLayout(feat_proc_layout);
+    list_dock->setWidget(internal_widget);
+
     addDockWidget(Qt::RightDockWidgetArea, table_dock);
     addDockWidget(Qt::LeftDockWidgetArea, flow_dock);
     addDockWidget(Qt::TopDockWidgetArea, text_dock);
@@ -109,6 +114,7 @@ void DSMainWindow::showVoicePath() {
 
 void DSMainWindow::selectNodeFromPath() {
     status_bar->clearMessage();
+    graph_manager->Graph->setFocus();
     if(graph_manager->Graph->focusItem()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
         QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
@@ -149,6 +155,7 @@ void DSMainWindow::execFeatProc() {
     s_erc error = S_SUCCESS;
     std::string feature;
     status_bar->clearMessage();
+    graph_manager->Graph->setFocus();
     if(graph_manager->Graph->focusItem()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
         QModelIndexList index=list_view->selectionModel()->selectedIndexes();
@@ -265,6 +272,7 @@ DSMainWindow::DSMainWindow(QWidget* parent):
     graph_manager(new GraphManager()),
     featuresTable(new QTableView()),
     graph_view(new QGraphicsView(this)),
+    run_feat_proc(new QPushButton("Run",this)),
     menu_bar(new QMenuBar(this)),
     status_bar(new QStatusBar(this)),
     logFile(new QFile("log.txt"))

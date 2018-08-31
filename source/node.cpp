@@ -26,6 +26,7 @@ Node::Node(const SItem* item,const QString& id,const QString& rel,const QString&
     setY(y);
     //so that is over arrow but not over lines
     setZValue(1);
+    setFlag(QGraphicsItem::ItemIsFocusScope);
 }
 
 

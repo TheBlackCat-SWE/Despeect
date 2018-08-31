@@ -44,6 +44,7 @@ private:
     QDockWidget* table_dock;
     GraphManager* graph_manager;
     QGraphicsView* graph_view;
+    QPushButton* run_feat_proc;
 
     //QToolBar* tool_bar;
     QMenuBar* menu_bar;

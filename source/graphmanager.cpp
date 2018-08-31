@@ -14,6 +14,8 @@ GraphManager::GraphManager():Graph(new QGraphicsScene()),Relations(),RelationsMo
     //when an item in the relations model get checked or unchecked graph manager will tell to the graph to hide or show the relation
     connect(RelationsModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(changeRelationVisibility(QStandardItem*)));
     connect(Graph,SIGNAL(selectionChanged()),this,SLOT(notifySelection()));
+
+    Graph->setStickyFocus(1);
 }
 
 
