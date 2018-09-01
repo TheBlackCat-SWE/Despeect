@@ -72,6 +72,7 @@ private slots:
     void execFeatProc();
     void showNodeFeatures();
     void loadTextFromFile();
+    void exportGraph();
     void loadText();
     void execUttProc(std::string utt_proc);
     void execUttProcList(const std::vector<std::string>& proc_list);
