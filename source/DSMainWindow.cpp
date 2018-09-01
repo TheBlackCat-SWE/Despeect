@@ -29,6 +29,7 @@ void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
     actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
+    actions["exportGraph"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Graph", this);
 }
 
 void DSMainWindow::createMenus() {
@@ -45,6 +46,7 @@ void DSMainWindow::createMenus() {
 void DSMainWindow::doConnections() {
     connect(actions["loadVoiceAct"], &QAction::triggered, this, &DSMainWindow::loadVoice);
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
+    connect(actions["exportGraph"], &QAction::triggered, this, &DSMainWindow::exportGraph);
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
     connect(graph_manager->Graph, &QGraphicsScene::selectionChanged, this, &DSMainWindow::showNodeFeatures);
     connect(run_feat_proc, &QPushButton::clicked, this, &DSMainWindow::execFeatProc);
@@ -95,6 +97,16 @@ void DSMainWindow::setupUI() {
     doConnections();
 }
 
+void DSMainWindow::exportGraph(){
+    graph_manager->Graph->clearSelection();                                                  // Selections would also render to the file
+    graph_manager->Graph->setSceneRect(graph_manager->Graph->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
+    QImage image(graph_manager->Graph->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
+    image.fill(Qt::white);                                              // Start all pixels white
+
+    QPainter painter(&image);
+    graph_manager->Graph->render(&painter);
+    image.save("graph.png");
+}
 
 void DSMainWindow::loadVoice() {
     voice_path = QFileDialog::getOpenFileName(this, "Open Configuration File",
