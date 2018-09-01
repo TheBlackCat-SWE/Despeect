@@ -134,8 +134,8 @@ void DSMainWindow::selectNodeFromPath() {
     graph_manager->Graph->setFocus();
     if(graph_manager->Graph->focusItem()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-        QString text = QInputDialog::getText(this, (*myNode)->getRelation(),
-                                            (*myNode)->getPath(), QLineEdit::Normal);
+        QString text = QInputDialog::getText(this,"Selected relation: "+(*myNode)->getRelation(),
+                                            "Path from head to selected node: <b>"+(*myNode)->getPath()+"</b>", QLineEdit::Normal);
         if(!text.isNull()) {
             QString realPath((*myNode)->getPath()+text);
             graph_manager->selectItem((*myNode)->getRelation(),realPath);
@@ -153,6 +153,11 @@ void DSMainWindow::showNodeFeatures() {
         QStandardItemModel* table_model = new QStandardItemModel(feat.size(), 2);
         auto i=feat.begin();
         int row=0;
+        QStandardItem *itemKey = new QStandardItem(QString("Path from head"));
+        table_model->setItem(row, 0, itemKey);
+        QStandardItem *itemValue = new QStandardItem(QString((*myNode)->getPath()));
+        table_model->setItem(row, 1, itemValue);
+        row++;
         while(i!=feat.end()){
             QStandardItem *itemKey = new QStandardItem(QString(i.key().c_str()));
             table_model->setItem(row, 0, itemKey);
@@ -173,7 +178,7 @@ void DSMainWindow::execFeatProc() {
     std::string feature;
     status_bar->clearMessage();
     graph_manager->Graph->setFocus();
-    if(graph_manager->Graph->focusItem()){
+    if(graph_manager->Graph->focusItem() && !list_view->selectionModel()->selectedIndexes().empty()){
         auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
         QModelIndexList index=list_view->selectionModel()->selectedIndexes();
         const char* key=list_model->data(index[0]).toString().toStdString().c_str();
@@ -201,7 +206,7 @@ void DSMainWindow::execFeatProc() {
             }
         }
         else
-            status_bar->showMessage("select a node");
+            status_bar->showMessage("select a node and a feature processor");
 }
 
 
