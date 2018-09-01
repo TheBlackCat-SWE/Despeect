@@ -105,7 +105,12 @@ void DSMainWindow::exportGraph(){
 
     QPainter painter(&image);
     graph_manager->Graph->render(&painter);
-    image.save("graph.png");
+    bool ok;
+    QString text = QInputDialog::getText(this, tr(""),
+                                         tr("File Name:"), QLineEdit::Normal,
+                                         tr("graph.png"), &ok);
+    if (ok && !text.isEmpty())
+    image.save(text);
 }
 
 void DSMainWindow::loadVoice() {
