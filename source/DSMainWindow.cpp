@@ -92,6 +92,7 @@ void DSMainWindow::setupUI() {
     status_bar->setStyleSheet("color: red");
     setStatusBar(status_bar);
     graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    graph_view->setDragMode(QGraphicsView::RubberBandDrag); // enable rubberband selection
     createActions();
     createMenus();
     doConnections();
