@@ -29,17 +29,28 @@ void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
     actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
-    actions["exportGraph"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Graph", this);
+    actions["exportGraph"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Graph Image", this);
+    actions["exportUtterance"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Utterance", this);
+    actions["importUtterance"] = new QAction(QIcon::fromTheme("document-open"),"Import Utterance", this);
 }
 
 void DSMainWindow::createMenus() {
         QMenu* fileMenu = new QMenu("File", this);
         QList<QString> action_key = actions.keys();
-        for(int i = 0; i < action_key.size(); i++) {
-            fileMenu->addAction(actions[action_key[i]]);
-            // if(i == 2 || i == 6) fileMenu->addSeparator();
-        }
-        //fileMenu->addSeparator();
+
+        fileMenu->addAction(actions["loadVoiceAct"]);
+        fileMenu->addAction(actions["showVoicePathAct"]);
+
+        fileMenu->addSeparator();
+
+        fileMenu->addAction(actions["selectNodeFromPath"]);
+
+        fileMenu->addSeparator();
+
+        fileMenu->addAction(actions["exportGraph"]);
+        fileMenu->addAction(actions["exportUtterance"]);
+        fileMenu->addAction(actions["importUtterance"]);
+
         menu_bar->addMenu(fileMenu);
 }
 
@@ -48,6 +59,8 @@ void DSMainWindow::doConnections() {
     connect(actions["showVoicePathAct"], &QAction::triggered, this, &DSMainWindow::showVoicePath);
     connect(actions["exportGraph"], &QAction::triggered, this, &DSMainWindow::exportGraph);
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
+    connect(actions["exportUtterance"], &QAction::triggered, this, &DSMainWindow::exportUtterance);
+    connect(actions["importUtterance"], &QAction::triggered, this, &DSMainWindow::importUtterance);
     connect(graph_manager->Graph, &QGraphicsScene::selectionChanged, this, &DSMainWindow::showNodeFeatures);
     connect(run_feat_proc, &QPushButton::clicked, this, &DSMainWindow::execFeatProc);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
@@ -101,17 +114,19 @@ void DSMainWindow::setupUI() {
 void DSMainWindow::exportGraph(){
     graph_manager->Graph->clearSelection();                                                  // Selections would also render to the file
     graph_manager->Graph->setSceneRect(graph_manager->Graph->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
-    QImage image(graph_manager->Graph->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
+    QImage image(graph_manager->Graph->width(), graph_manager->Graph->height(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
     image.fill(Qt::white);                                              // Start all pixels white
 
     QPainter painter(&image);
     graph_manager->Graph->render(&painter);
-    bool ok;
-    QString text = QInputDialog::getText(this, tr(""),
-                                         tr("File Name:"), QLineEdit::Normal,
-                                         tr("graph.png"), &ok);
-    if (ok && !text.isEmpty())
-    image.save(text);
+    painter.setRenderHint(QPainter::Antialiasing);
+    QString text = QFileDialog::getSaveFileName(this, "Graph save path","", "Image PNG (*.png)");
+    if (text.length() > 0) {
+        if(!text.endsWith(".png"))
+            text.append(".png");
+        if (!text.isEmpty())
+            image.save(text);
+    }
 }
 
 void DSMainWindow::loadVoice() {
@@ -329,4 +344,32 @@ DSMainWindow::~DSMainWindow() {
 
 void DSMainWindow::loadText() {
     adapter->loadText(text_dock->getText().toStdString());
+}
+
+void DSMainWindow::exportUtterance() {
+    QString text = QFileDialog::getSaveFileName(this, "Utterance export path", "", "Speect file (*.utt)");
+    if (text.length() > 0) {
+        if(!text.endsWith(".utt"))
+            text.append(".utt");
+        adapter->exportUtterance(text.toStdString());
+    }
+}
+
+void DSMainWindow::importUtterance() {
+    QString text = QFileDialog::getOpenFileName(this, "Utterance import path","", "Speect file (*.utt)");
+    if(text.length() > 0) {
+        adapter->importUtterance(text.toStdString());
+        int i=0;
+        graph_manager->clear();
+        foreach (auto t,adapter->getRelList())
+        {
+            const DSRelation* currentRelation = adapter->getRel(t);
+            DSItem* temp = currentRelation->getHead();
+            if(temp)
+                graph_manager->printRelation(QString(t.c_str()), temp, colors.at(i%colors.size()));
+            ++i;
+        }
+        // for relation
+        emit updateAvailableRelations();
+    }
 }

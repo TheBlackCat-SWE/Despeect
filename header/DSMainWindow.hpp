@@ -79,6 +79,8 @@ private slots:
     void updateAvailableRelations();
     void showRelations(QStringList,QStringList);
     void resetUtterance();
+    void exportUtterance();
+    void importUtterance();
 public:
     DSMainWindow(QWidget* parent = Q_NULLPTR);
     ~DSMainWindow();

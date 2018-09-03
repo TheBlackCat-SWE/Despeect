@@ -11,6 +11,9 @@
 #include <vector>
 #include <map>
 
+#include <QMessageBox>
+#include <QFileDialog>
+
 class DSRelation;
 
 
@@ -225,6 +228,20 @@ public:
      *
      */
     bool nullUtterance() const;
+
+    /**
+     * @brief exportUtterance
+     * @param path The path where to export the utterance
+     *
+     */
+    void exportUtterance(std::string path) const;
+
+    /**
+     * @brief importUtterance
+     * @param path The path from where to import the utterance
+     *
+     */
+    void importUtterance(std::string path);
 
 
     // ------------------------- Utterance Related -------------------------

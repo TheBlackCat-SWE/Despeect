@@ -489,6 +489,24 @@ SObject* DSAdapter::execFeatProcessor(const char* key, const SItem* item) {
     return obj;
 }
 
+void DSAdapter::exportUtterance(std::string path) const {
+    s_erc err = S_SUCCESS;
+    if (path.length() > 0) {
+        SObjectSave(S_OBJECT(utt), path.c_str(), "spct_utt", &err);
+    }
+    S_CHK_ERR(&err, S_CONTERR, "SObjectSave",
+              "Failed to export utterance");
+}
+
+void DSAdapter::importUtterance(std::string path) {
+    s_erc err = S_SUCCESS;
+    if(path.length() > 0) {
+        utt = S_UTTERANCE(SObjectLoad(path.c_str(), "spct_utt", &err));
+    }
+    S_CHK_ERR(&err, S_CONTERR, "SObjectLoad",
+              "Failed to import utterance");
+}
+
 DSAdapter::~DSAdapter() {
     if(text) S_DELETE(text, "~DSAdapter", &error);
     if(voice) S_DELETE(voice, "~DSAdapter", &error);
