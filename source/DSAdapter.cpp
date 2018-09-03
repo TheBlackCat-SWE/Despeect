@@ -59,6 +59,7 @@ DSAdapter *DSAdapter::createAdapter() {
 
     if(!ptr->hasError()) {
         ptr->loadPlugin("audio_riff.spi");
+        ptr->loadPlugin("utt_ebml.spi");
         return ptr;
     }
     else {
@@ -76,7 +77,13 @@ bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
     }
 
     S_CLR_ERR(&error);
-    const SObject* audio_obj = SUtteranceGetFeature(utt, "audio", &error);
+
+    SUtterance* utterance = SVoiceSynthUtt(voice, "text", text, &error);
+    S_CHK_ERR(&error, S_CONTERR, "execUttType",
+          "Failed to execute the utterance type %s\n",
+          "text");
+
+    const SObject* audio_obj = SUtteranceGetFeature(utterance, "audio", &error);
     if(hasError()) {
         S_WARNING(error, "saveOutputAudio", "Failed to fetch audio object,"
                   " no audio feature found in the current utterance\n");
@@ -84,13 +91,14 @@ bool DSAdapter::saveOutputAudio(const std::string& audio_output_path) {
         return false;
     }
     SObjectSave(audio_obj, audio_output_path.c_str(), "riff", &error);
-    delete audio_obj;
+    // delete audio_obj;
     if(hasError()) {
         S_WARNING(error, "saveOutputAudio", "Failed to save audio object, "
                   "error using 'audio_riff' plugin\n");
         S_CLR_ERR(&error);
         return false;
     }
+    delete utterance;
     return true;
 }
 

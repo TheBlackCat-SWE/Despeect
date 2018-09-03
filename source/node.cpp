@@ -55,15 +55,12 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
         myPen.setWidth(5);
         Brush.setColor(tempC);
         myPen.setStyle(Qt::SolidLine);
-    }//only when focused
+    } //only when focused
     else if(hasFocus())
     {
-        QColor tempC=color;
-        tempC.setAlphaF(1);
-        myPen.setColor(tempC);
-        Brush.setColor(color);
+        Brush.setColor(QColor(255,255,0));
+        myPen.setColor(QColor(0,0,255));
         myPen.setWidth(5);
-
     }
 
     //set the brush and color

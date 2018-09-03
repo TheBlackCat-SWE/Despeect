@@ -243,7 +243,6 @@ public:
      */
     void importUtterance(std::string path);
 
-
     // ------------------------- Utterance Related -------------------------
 
     /**

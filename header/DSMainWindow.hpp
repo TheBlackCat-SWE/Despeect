@@ -81,6 +81,7 @@ private slots:
     void resetUtterance();
     void exportUtterance();
     void importUtterance();
+    void exportAudio();
 public:
     DSMainWindow(QWidget* parent = Q_NULLPTR);
     ~DSMainWindow();

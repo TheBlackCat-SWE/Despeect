@@ -32,6 +32,9 @@ public:
         s_erc error = S_SUCCESS;
         return SItemEqual(item, other.item, &error);
     }
+    bool checkRelation(const std::string&relation) const;
+
+    int IsEqual(const std::string &relation,const std::string& id) const;
 
     /**
      * @brief getName

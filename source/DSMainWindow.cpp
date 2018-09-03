@@ -19,6 +19,7 @@
 #include <iostream>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QKeySequence>
 
 void DSMainWindow::setupLog(){
     logFile->remove();
@@ -27,31 +28,49 @@ void DSMainWindow::setupLog(){
 
 void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
-    actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("dialog-information"), "Show Voice Path", this);
-    actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("dialog-information"),"Insert Path To Node", this);
-    actions["exportGraph"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Graph Image", this);
-    actions["exportUtterance"] = new QAction(QIcon::fromTheme("dialog-information"),"Export Utterance", this);
+    actions["loadVoiceAct"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
+    actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("logviewer"), "Show Voice Path", this);
+    actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("system-search"),"Insert Path To Node", this);
+    actions["selectNodeFromPath"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+    actions["exportGraph"] = new QAction(QIcon::fromTheme("image-x-generic"),"Export Graph Image", this);
+    actions["exportGraph"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+    actions["exportUtterance"] = new QAction(QIcon::fromTheme("accessories-text-editor"),"Export Utterance", this);
+    actions["exportUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actions["importUtterance"] = new QAction(QIcon::fromTheme("document-open"),"Import Utterance", this);
+    actions["importUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+    actions["exportAudio"] = new QAction(QIcon::fromTheme("audio-volume-high"),"Export Audio", this);
+    actions["exportAudio"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
+    actions["exit"] = new QAction(QIcon::fromTheme("application-exit"),"Exit", this);
+    actions["exit"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+    actions["execUttProcList"] = new QAction(QIcon::fromTheme("system-run"),"Run Utterance Processors", this);
+    actions["execUttProcList"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
 }
 
 void DSMainWindow::createMenus() {
         QMenu* fileMenu = new QMenu("File", this);
         QList<QString> action_key = actions.keys();
-
         fileMenu->addAction(actions["loadVoiceAct"]);
         fileMenu->addAction(actions["showVoicePathAct"]);
+        fileMenu->addSeparator();
 
+        fileMenu->addAction(actions["importUtterance"]);
         fileMenu->addSeparator();
 
         fileMenu->addAction(actions["selectNodeFromPath"]);
-
         fileMenu->addSeparator();
 
-        fileMenu->addAction(actions["exportGraph"]);
-        fileMenu->addAction(actions["exportUtterance"]);
-        fileMenu->addAction(actions["importUtterance"]);
+        fileMenu->addAction(actions["execUttProcList"]);
+        fileMenu->addSeparator();
 
+        fileMenu->addAction(actions["exit"]);
         menu_bar->addMenu(fileMenu);
+
+        QMenu* exportMenu = new QMenu("Export", this);
+        exportMenu->addAction(actions["exportUtterance"]);
+        exportMenu->addAction(actions["exportGraph"]);
+        exportMenu->addAction(actions["exportAudio"]);
+        menu_bar->addMenu(exportMenu);
+
 }
 
 void DSMainWindow::doConnections() {
@@ -61,6 +80,8 @@ void DSMainWindow::doConnections() {
     connect(actions["selectNodeFromPath"], &QAction::triggered, this, &DSMainWindow::selectNodeFromPath);
     connect(actions["exportUtterance"], &QAction::triggered, this, &DSMainWindow::exportUtterance);
     connect(actions["importUtterance"], &QAction::triggered, this, &DSMainWindow::importUtterance);
+    connect(actions["exportAudio"], &QAction::triggered, this, &DSMainWindow::exportAudio);
+    connect(actions["exit"], &QAction::triggered, this, &DSMainWindow::close);
     connect(graph_manager->Graph, &QGraphicsScene::selectionChanged, this, &DSMainWindow::showNodeFeatures);
     connect(run_feat_proc, &QPushButton::clicked, this, &DSMainWindow::execFeatProc);
     connect(this, &DSMainWindow::fetchData, flow_dock, &DSFlowControlDockWidget::fetchData);
@@ -70,6 +91,8 @@ void DSMainWindow::doConnections() {
     connect(flow_dock, &DSFlowControlDockWidget::resetUtterance, this, &DSMainWindow::resetUtterance);
     connect(rel_dock,&DSRelationControlDockWidget::showRelation,this,&DSMainWindow::showRelations);
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
+
+    connect(actions["execUttProcList"], &QAction::triggered, flow_dock, &DSFlowControlDockWidget::run_all_clicked);
 }
 /*
 void DSMainWindow::setupSB(){
@@ -104,8 +127,11 @@ void DSMainWindow::setupUI() {
     status_bar->setSizeGripEnabled(false);
     status_bar->setStyleSheet("color: red");
     setStatusBar(status_bar);
+
+    graph_view->setEnabled(true);
     graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    graph_view->setDragMode(QGraphicsView::RubberBandDrag); // enable rubberband selection
+   //  graph_view->setDragMode(QGraphicsView::RubberBandDrag); // enable rubberband selection
+
     createActions();
     createMenus();
     doConnections();
@@ -147,18 +173,15 @@ void DSMainWindow::showVoicePath() {
 
 void DSMainWindow::selectNodeFromPath() {
     status_bar->clearMessage();
-    graph_manager->Graph->setFocus();
-    if(graph_manager->Graph->focusItem()){
-        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-        QString text = QInputDialog::getText(this,"Selected relation: "+(*myNode)->getRelation(),
-                                            "Path from head to selected node: <b>"+(*myNode)->getPath()+"</b>", QLineEdit::Normal);
-        if(!text.isNull()) {
-            QString realPath((*myNode)->getPath()+text);
-            graph_manager->selectItem((*myNode)->getRelation(),realPath);
-        }
+    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+    QString text = QInputDialog::getText(this,"Selected relation: "+(*myNode)->getRelation(),
+                                         "Path from head to selected node: <b>"+(*myNode)->getPath()+"</b>", QLineEdit::Normal);
+    if(!text.isNull()) {
+        QString realPath((*myNode)->getPath()+text);
+        graph_view->setFocus();
+        graph_manager->selectItem((*myNode)->getRelation(),realPath);
     } else
         status_bar->showMessage("select a node");
-
 }
 
 void DSMainWindow::showNodeFeatures() {
@@ -285,6 +308,7 @@ void DSMainWindow::updateAvailableRelations(){
 }
 
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
+    rel_dock->setFocus();
     graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
 }
 
@@ -371,5 +395,15 @@ void DSMainWindow::importUtterance() {
         }
         // for relation
         emit updateAvailableRelations();
+    }
+}
+
+void DSMainWindow::exportAudio() {
+    loadText();
+    QString text = QFileDialog::getSaveFileName(this, "Audio export path", "", "Audio (*.wav)");
+    if(text.length() > 0) {
+        if(!text.endsWith(".wav"))
+            text.append(".wav");
+        adapter->saveOutputAudio(text.toStdString());
     }
 }

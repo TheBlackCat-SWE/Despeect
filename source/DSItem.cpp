@@ -160,3 +160,46 @@ const SItem* DSItem::getSItem()const {
     else
         return nullptr;
 }
+
+/*
+* Description: check if the item belongs to the given relation
+* @param const std::string & - relation
+* @return bool
+*/
+bool DSItem::checkRelation(const std::string&relation) const
+{
+    s_erc error=S_SUCCESS;
+return (relation==SRelationName(SItemRelation(item,&error),&error));
+}
+
+/*
+* Description: check if the SItem is equal to the SItem found in the given relation at the given Path
+* 			   using Speect equals function. Returns:
+* 					- 0 if !equal
+* 					- 1 if equal and same relation
+* 					- 2 if equal and different relations
+* @param const std::string& - first item path
+* @param const std::string& - second item path
+* @return int
+*/
+int DSItem::IsEqual(const std::string &relation,const std::string& id) const
+{
+    s_erc error=S_SUCCESS;
+    //if relation is equal only check Id otherwise must retrieve the SItem
+    bool rel=checkRelation(relation);
+    const SItem* item2=
+            SItemPathToItem(
+                SRelationHead(
+                    SUtteranceGetRelation(
+                        SItemUtterance(item,&error),relation.c_str(),&error
+                        ),&error
+                    ),id.c_str(),&error);
+    int result=0;
+    if(rel)
+        result=item==item2?1:0;
+    else
+        //otherwise relation is different retrieve the item at given path and test Speect equals
+        result=SItemEqual(item,item2,&error)?2:0;
+    S_DELETE(item2,NULL,&error);
+    return result;
+}

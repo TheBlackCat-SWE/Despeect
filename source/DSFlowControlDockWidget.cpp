@@ -2,6 +2,7 @@
 #include "DSTreeItem.hpp"
 #include <vector>
 #include <string>
+#include <QAction>
 #include "QDebug"
 
 

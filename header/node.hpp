@@ -86,6 +86,15 @@ public:
      * @return const QString &
      */
     const QString &getPath();
+
+    /*
+     * Description: returns the item ID
+     * @return const QString &
+     */
+    const QString& getId() const
+    {
+        return identifier.getPath();
+    }
     
     /**
      * @brief returns the relation

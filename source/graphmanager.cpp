@@ -132,6 +132,18 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
     {
         foreach(Node* node,Printed)
         {
+            //If item is equal and have different relation draw a dashed line
+            if(toBeChecked->IsEqual(node->getRelation().toStdString(),node->getId().toStdString())==2)
+            {
+                Line* a=new Line(Radius,QColor(qRgb(0,0,0)),1,NULL);
+                connect(node,SIGNAL(notifyVisibilityChange(bool)),a,SLOT(changeVisibility(bool)));
+                connect(node,SIGNAL(notifyPositionChange(QPointF)),a,SLOT(UpdateEndPoint(QPointF)));
+                connect(me,SIGNAL(notifyVisibilityChange(bool)),a,SLOT(changeVisibility(bool)));
+                connect(me,SIGNAL(notifyPositionChange(QPointF)),a,SLOT(UpdateStartPoint(QPointF)));
+                Graph->addItem(a);
+                a->UpdateStartPoint(me->pos());
+                a->UpdateEndPoint(node->pos());
+            }
             if(me->getRelation() == node->getRelation())
             {
                 //otherwise check if it's my father in the same relation
@@ -192,7 +204,6 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
 }
 
 void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList checkedKeys) {
-
     // start with clean state: hide all the Relations
 
     for(int i = 0; i < allKeys.length();++i){
@@ -231,7 +242,8 @@ void GraphManager::notifySelection() {
             focusSignal((*myNode)->getRelation(),(*myNode)->getPath(),true);
         }
     }
-    else{
+    else {
+        Graph->clearFocus();
         cleardetails();
     }
 }
@@ -243,5 +255,4 @@ void GraphManager::selectItem(const QString &relation, const QString &path) {
             item->setFocus();
             }
         }
-
 }

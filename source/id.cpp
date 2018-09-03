@@ -7,7 +7,7 @@ const QString& ID::getRelation() const {
 
 
 bool ID::operator ==(const ID &other) const {
-    return id==other.id&&relation==other.relation;
+    return id==other.id;
 }
 
 
