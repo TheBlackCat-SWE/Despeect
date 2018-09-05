@@ -28,22 +28,32 @@ void DSMainWindow::setupLog(){
 
 void DSMainWindow::createActions() {
     actions["loadVoiceAct"] = new QAction(QIcon::fromTheme("document-open"), "Load Voice File", this);
-    actions["loadVoiceAct"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
+    actions["loadVoiceAct"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
+    actions["importUtterance"] = new QAction(QIcon::fromTheme("document-open"),"Import Utterance", this);
+    actions["importUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     actions["showVoicePathAct"] = new QAction(QIcon::fromTheme("logviewer"), "Show Voice Path", this);
     actions["selectNodeFromPath"] = new QAction(QIcon::fromTheme("system-search"),"Insert Path To Node", this);
-    actions["selectNodeFromPath"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-    actions["exportGraph"] = new QAction(QIcon::fromTheme("image-x-generic"),"Export Graph Image", this);
-    actions["exportGraph"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+    actions["selectNodeFromPath"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
+
     actions["exportUtterance"] = new QAction(QIcon::fromTheme("accessories-text-editor"),"Export Utterance", this);
-    actions["exportUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-    actions["importUtterance"] = new QAction(QIcon::fromTheme("document-open"),"Import Utterance", this);
-    actions["importUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+    actions["exportUtterance"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_1));
+    actions["exportGraph"] = new QAction(QIcon::fromTheme("image-x-generic"),"Export Graph Image", this);
+    actions["exportGraph"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_2));
     actions["exportAudio"] = new QAction(QIcon::fromTheme("audio-volume-high"),"Export Audio", this);
-    actions["exportAudio"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
+    actions["exportAudio"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_3));
+
     actions["exit"] = new QAction(QIcon::fromTheme("application-exit"),"Exit", this);
     actions["exit"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-    actions["execUttProcList"] = new QAction(QIcon::fromTheme("system-run"),"Run Utterance Processors", this);
-    actions["execUttProcList"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
+
+    actions["execUttProcList"] = new QAction(QIcon::fromTheme("system-run"),"Run All", this);
+    actions["execUttProcList"]->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
+    actions["execStep"] = new QAction(QIcon::fromTheme("application-x-executable"),"Run Step", this);
+    actions["execStep"]->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+    actions["execFeatProc"] = new QAction(QIcon::fromTheme("system-run"),"Run Feature Processors", this);
+    actions["execFeatProc"]->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
+
+    actions["reset"] = new QAction(QIcon::fromTheme("system-run"),"Reset Utterance", this);
+    actions["reset"]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
 }
 
 void DSMainWindow::createMenus() {
@@ -59,11 +69,19 @@ void DSMainWindow::createMenus() {
         fileMenu->addAction(actions["selectNodeFromPath"]);
         fileMenu->addSeparator();
 
-        fileMenu->addAction(actions["execUttProcList"]);
+        fileMenu->addAction(actions["reset"]);
         fileMenu->addSeparator();
 
         fileMenu->addAction(actions["exit"]);
         menu_bar->addMenu(fileMenu);
+
+        QMenu* execMenu = new QMenu("Execution", this);
+        execMenu->addAction(actions["execUttProcList"]);
+        execMenu->addAction(actions["execStep"]);
+        execMenu->addSeparator();
+        execMenu->addAction(actions["execFeatProc"]);
+        menu_bar->addMenu(execMenu);
+
 
         QMenu* exportMenu = new QMenu("Export", this);
         exportMenu->addAction(actions["exportUtterance"]);
@@ -81,6 +99,7 @@ void DSMainWindow::doConnections() {
     connect(actions["exportUtterance"], &QAction::triggered, this, &DSMainWindow::exportUtterance);
     connect(actions["importUtterance"], &QAction::triggered, this, &DSMainWindow::importUtterance);
     connect(actions["exportAudio"], &QAction::triggered, this, &DSMainWindow::exportAudio);
+    connect(actions["reset"], &QAction::triggered, this, &DSMainWindow::resetUtterance);
     connect(actions["exit"], &QAction::triggered, this, &DSMainWindow::close);
     connect(graph_manager->Graph, &QGraphicsScene::selectionChanged, this, &DSMainWindow::showNodeFeatures);
     connect(run_feat_proc, &QPushButton::clicked, this, &DSMainWindow::execFeatProc);
@@ -93,6 +112,7 @@ void DSMainWindow::doConnections() {
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 
     connect(actions["execUttProcList"], &QAction::triggered, flow_dock, &DSFlowControlDockWidget::run_all_clicked);
+    connect(actions["execFeatProc"], &QAction::triggered, this, &DSMainWindow::execFeatProc);
 }
 /*
 void DSMainWindow::setupSB(){
@@ -337,6 +357,8 @@ void DSMainWindow::updateAvailableRelations(){
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
     auto selected_item = graph_manager->Graph->selectedItems();
     graph_manager->Graph->setFocus();
+    if (graph_manager->Graph->focusItem())
+        graph_manager->Graph->focusItem()->clearFocus();
 
     graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
 
