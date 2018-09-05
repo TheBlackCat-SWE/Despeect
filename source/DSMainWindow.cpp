@@ -208,8 +208,10 @@ void DSMainWindow::showNodeFeatures() {
         featuresTable->setModel(table_model);
         table_dock->setWidget(featuresTable);
         featuresTable->resizeColumnsToContents();
-    } else
-        status_bar->showMessage("select a node");
+    } else {
+        featuresTable->setModel(new QStandardItemModel(0, 2));
+        table_dock->setWidget(featuresTable);
+    }
 }
 
 void DSMainWindow::execFeatProc() {
@@ -304,7 +306,6 @@ void DSMainWindow::execUttProcList(const std::vector<std::string> &proc_list) {
 
 void DSMainWindow::updateAvailableRelations(){
     rel_dock->updateAvailableRelations();
-
 }
 
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
@@ -316,6 +317,7 @@ void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();
     graph_manager->clear();
+
     // for relation
     emit updateAvailableRelations();
 
