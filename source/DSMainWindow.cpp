@@ -130,7 +130,7 @@ void DSMainWindow::setupUI() {
 
     graph_view->setEnabled(true);
     graph_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-   //  graph_view->setDragMode(QGraphicsView::RubberBandDrag); // enable rubberband selection
+    graph_view->setDragMode(QGraphicsView::RubberBandDrag); // enable rubberband selection
 
     createActions();
     createMenus();
@@ -162,7 +162,6 @@ void DSMainWindow::loadVoice() {
         adapter->loadVoice(voice_path.toStdString());
         emit fetchData();
         }
-
 }
 
 void DSMainWindow::showVoicePath() {
@@ -173,21 +172,33 @@ void DSMainWindow::showVoicePath() {
 
 void DSMainWindow::selectNodeFromPath() {
     status_bar->clearMessage();
-    auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
-    QString text = QInputDialog::getText(this,"Selected relation: "+(*myNode)->getRelation(),
+
+    if(graph_manager->Graph->selectedItems().length() == 0) {
+        status_bar->showMessage("Select a node");
+        return;
+    }
+    if(graph_manager->Graph->selectedItems().length() > 1) {
+        status_bar->showMessage("You can run the process on up to one node at a time");
+        return;
+    }
+
+    if(graph_manager->Graph->selectedItems().length() == 1) {
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->selectedItems().first());
+        QString text = QInputDialog::getText(this,"Selected relation: "+(*myNode)->getRelation(),
                                          "Path from head to selected node: <b>"+(*myNode)->getPath()+"</b>", QLineEdit::Normal);
     if(!text.isNull()) {
         QString realPath((*myNode)->getPath()+text);
-        graph_view->setFocus();
         graph_manager->selectItem((*myNode)->getRelation(),realPath);
     } else
-        status_bar->showMessage("select a node");
+        status_bar->showMessage("Insert a a path");
+    }
 }
 
 void DSMainWindow::showNodeFeatures() {
     status_bar->clearMessage();
-    if(graph_manager->Graph->focusItem()){
-        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+
+    if(graph_manager->Graph->selectedItems().length() == 1) {
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->selectedItems().first());
         QMap<std::string,std::string> feat=(*myNode)->getFeatures();
         QStandardItemModel* table_model = new QStandardItemModel(feat.size(), 2);
         auto i=feat.begin();
@@ -219,11 +230,24 @@ void DSMainWindow::execFeatProc() {
     std::string feature;
     status_bar->clearMessage();
     graph_manager->Graph->setFocus();
-    if(graph_manager->Graph->focusItem() && !list_view->selectionModel()->selectedIndexes().empty()){
-        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->focusItem());
+
+    if(graph_manager->Graph->selectedItems().length() == 0) {
+        status_bar->showMessage("Select a node");
+        return;
+    }
+    if(graph_manager->Graph->selectedItems().length() > 1) {
+        status_bar->showMessage("You can run the process on up to one node at a time");
+        return;
+    }
+
+    if(!list_view->selectionModel()->selectedIndexes().empty()) {
+        auto myNode=std::find(graph_manager->Printed.begin(),graph_manager->Printed.end(),graph_manager->Graph->selectedItems().first());
         QModelIndexList index=list_view->selectionModel()->selectedIndexes();
         const char* key=list_model->data(index[0]).toString().toStdString().c_str();
         SObject* obj=adapter->execFeatProcessor(key,(*myNode)->getSItem());
+        if(!obj) {
+            feature = "You can't execute this feature-processor on this node";
+        } else
         if(SObjectIsType(obj,"SString",&error)) {
             std::string value(SObjectGetString(obj,&error));
             feature=value;
@@ -236,18 +260,20 @@ void DSMainWindow::execFeatProc() {
             float value(SObjectGetFloat(obj, &error));
             feature=std::to_string(value);
         }
-        if(feature.empty()){
-            QMessageBox msgBox;
-            msgBox.setText(QString::fromStdString("Selected feature does not exist"));
-            msgBox.exec();
-        }else{
+        if(feature.empty()) {
+            const char* name = SObjectType(obj, &error);
+            if(error == S_SUCCESS) {
+                feature = "The type of the selected feature (" + std::string(SObjectType(obj, &error)) + ") cannot be rapresented";
+            } else {
+                feature = "The type of the selected feature cannot be rapresented";
+            }
+        }
         QMessageBox msgBox;
         msgBox.setText(QString::fromStdString(feature));
         msgBox.exec();
-            }
         }
         else
-            status_bar->showMessage("select a node and a feature processor");
+            status_bar->showMessage("select a feature processor");
 }
 
 
@@ -309,10 +335,15 @@ void DSMainWindow::updateAvailableRelations(){
 }
 
 void DSMainWindow::showRelations(QStringList allKeys,QStringList checkedKeys) {
-    rel_dock->setFocus();
-    graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
-}
+    auto selected_item = graph_manager->Graph->selectedItems();
+    graph_manager->Graph->setFocus();
 
+    graph_manager->changeRelationVisibilityList(allKeys,checkedKeys);
+
+    for(auto it = selected_item.begin(); it != selected_item.end(); it++) {
+        (*it)->setSelected(true);
+    }
+}
 
 void DSMainWindow::resetUtterance() {
     adapter->resetUtterance();

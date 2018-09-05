@@ -392,7 +392,7 @@ std::vector<std::string> DSAdapter::getFeatProcList() const {
               "Failed to retrieve feature processor keys\n");
     std::vector<std::string> std_list(toStdList(list));
 
-    S_DELETE(list, "getFeatProcList", &error);
+    // S_DELETE(list, "getFeatProcList", &error);
     return std_list;
 }
 
@@ -483,14 +483,13 @@ std::map<std::string, std::string> DSAdapter::toStdMap(const SMap* spct_map) {
 
 SObject* DSAdapter::execFeatProcessor(const char* key, const SItem* item) {
     s_erc error = S_SUCCESS;
-    SObject* obj=0;
+    SObject* obj = nullptr;
     const SFeatProcessor* featProc=SVoiceGetFeatProc(voice,key,&error);
-    S_CHK_ERR(&error, S_CONTERR, "SVoiceGetFeatProc",
+    if(S_CHK_ERR(&error, S_CONTERR, "SVoiceGetFeatProc",
               "Failed to get feature processor, "
-              "key could not exist\n");
-    if(error == S_SUCCESS) {
-        obj = SFeatProcessorRun(featProc,item,&error);
-        }
+              "key could not exist\n"))
+        return 0;
+    obj = SFeatProcessorRun(featProc, item,&error);
     S_CHK_ERR(&error, S_CONTERR, "SFeatProcessorRun",
               "Failed to execute feature processor, "
               "key could not exist\n");

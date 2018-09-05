@@ -205,7 +205,6 @@ void GraphManager::checkRelations(QVector<const DSItem*> &tbc, const QString& re
 
 void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList checkedKeys) {
     // start with clean state: hide all the Relations
-
     for(int i = 0; i < allKeys.length();++i){
         auto it = Relations.find(allKeys.at(i));
         if(it != Relations.end()) {
@@ -226,6 +225,7 @@ void GraphManager::changeRelationVisibilityList(QStringList allKeys,QStringList 
 
 void GraphManager::changeRelationVisibility(QStandardItem *key) {
     //find the item that represent the relation in the graph model and hide it
+
     auto it=Relations.find(key->text());
     if(it!=Relations.end())
         (*it)->setVisible(!(*it)->isVisible());
