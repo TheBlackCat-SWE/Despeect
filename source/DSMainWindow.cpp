@@ -112,6 +112,8 @@ void DSMainWindow::doConnections() {
     connect(text_dock, &DSTextDockWidget::loadButtonClicked, this, &DSMainWindow::loadTextFromFile);
 
     connect(actions["execUttProcList"], &QAction::triggered, flow_dock, &DSFlowControlDockWidget::run_all_clicked);
+    connect(actions["execStep"], &QAction::triggered, flow_dock, &DSFlowControlDockWidget::run_step_clicked);
+
     connect(actions["execFeatProc"], &QAction::triggered, this, &DSMainWindow::execFeatProc);
 }
 /*
